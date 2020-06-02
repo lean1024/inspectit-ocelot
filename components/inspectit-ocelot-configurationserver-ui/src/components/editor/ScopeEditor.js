@@ -1,16 +1,21 @@
+import {Dropdown} from 'primereact/dropdown';
+
+import {InputText} from 'primereact/inputtext';
 import {ListBox} from 'primereact/listbox';
+import {OrderList} from 'primereact/orderlist';
 
 import { cloneDeep, isEqual, set, unset } from 'lodash';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
-import { InputText } from 'primereact/inputtext';
 import { Menubar } from 'primereact/menubar';
 import { Message } from 'primereact/message';
 import { Row } from 'primereact/row';
 import { TreeTable } from 'primereact/treetable';
 import PropTypes from 'prop-types';
 import React from 'react';
+import ClassMatcherCreateComponent from './newfiles/class_naming/ClassMatcherCreateComponent';
+import ClassMatcherName from './newfiles/class_naming/ClassMatcherName';
 
 // helper for a schema property type constants
 const schemaType = {
@@ -32,57 +37,84 @@ const DEFAULT_EXPANDED_KEYS = { inspectit: true };
  * TODO what about enums (select box, but not used)
  * TODO what about the multiline strings
  */
-class ScopeEditor extends React.Component {
+class TreeTableEditor extends React.Component {
 
   constructor() {
     super();
     this.state = {
-        city: null,
-        cities: null,
-        car: 'BMW'
+        icon_scopeName: false,
+        icon_classSelector: false,
+        icon_methodSelector: false,
+        value: null,
+        cars: null
     };
-  }
-      
-  componentDidMount(){
-    let scopes = this.props.config.inspectit.instrumentation.scopes
-    let scopeNameList = [];
-    Object.keys(scopes).map(name => {
-      scopeNameList.push({label: name})
-    })
-    console.log(scopeNameList)
-    this.setState({scopeNameList})
+
   }
 
+  handleClick = () => {
+    alert('oh noe')
+  }
   
 
   render() {
-    const { loading, config, ...rest } = this.props;
-    const { scopeNameList } = this.state;
+    const citySelectItems = [
+      {label: 'EQUALS_FULLY', value: 'EQUALS_FULLY'},
+      {label: 'STARTS_WITH', value: 'STARTS_WITH'},
+      {label: 'STARTS_WITH_IGNORE_CASE', value: 'STARTS_WITH_IGNORE_CASE'},
+      {label: 'CONTAINS', value: 'CONTAINS'},
+      {label: 'CONTAINS_IGNORE_CASE', value: 'CONTAINS_IGNORE_CASE'},
+      {label: 'ENDS_WITH', value: 'ENDS_WITH'},
+      {label: 'ENDS_WITH_IGNORE_CASE', value: 'ENDS_WITH_IGNORE_CASE'},
+    ];
 
-    console.log('tom', scopeNameList);
+    // const background_bigDiv = "#ececee"; 
+    // const background_uberSchriftDiv = "#fdfdfd";
+    // const background_middleDiv  = "whitesmoke"
+    // const background_extraField = "#fdfdfd";
+    // const color_uberSchriftText = "#c06c84";
+    // const color_elementSchrift = "darkslateblue";
 
-    const cities = [
-      {name: 'New York', code: 'NY'},
-      {name: 'Rome', code: 'RM'},
-      {name: 'London', code: 'LDN'},
-      {name: 'Istanbul', code: 'IST'},
-      {name: 'Paris', code: 'PRS'}
-  ];
+    // const background_bigDiv = "ghostwhite";   
+    // // const background_bigDiv = "#bccace";
+    // const background_uberSchriftDiv = "#fa9581";
+    // const background_middleDiv = "whitesmoke"; 
+    // const background_extraField = "whitesmoke";
+    // const color_uberSchriftText = "whitesmoke";
+    // const color_elementSchrift = "slategrey";
 
+    const background_bigDiv = "lightsteelblue";   
+    // const background_bigDiv = "#bccace";
+    const background_uberSchriftDiv = "#fa9581";
+    const background_middleDiv = "#8bacbd"; 
+    const background_extraField = "whitesmoke";
+    const color_uberSchriftText = "whitesmoke";
+    const color_elementSchrift = "whitesmoke";
 
+    const classMatcherObject = {
+      names: {
+        0: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
+        1: {matcherMode: 'STARTS_WITH', term: "prefix"},
+        2: {matcherMode: 'ENDS_WITH', term: "suffix"},
+      },
+      interfaces: {
+        0: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
+        1: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
+        2: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
+      },
+      annotations: {
+        0: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
+        1: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
+        2: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
+      },
+      superclasses:{
+        0: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
+      }
 
-  const cars = [
-      {label: 's_jdbc_statement_execute'},
-      {label: 's_jdbc_preparedstatement_execute'},
-      {label: 's_jdbc_statement_executeBatch'},
-      {label: 's_jdbc_preparedstatement_executeBatch'},
-      {label: 's_apacheclient_doExecute'},
-      {label: 's_httpurlconnection_getOutputStream'},
-      {label: 's_servletapi_servlet_service'},
-      {label: 's_servletapi_filter_doFilter'},
-      {label: 's_servletapi_servletresponse_getOutputStream'},
-      {label: 's_servletapi_servletresponse_getWriter'},      
-  ];
+    }
+
+   
+
+ 
 
     return (
       <div className="this">
@@ -134,11 +166,17 @@ class ScopeEditor extends React.Component {
           }
         `}</style>
  
-        <div style={{ marginLeft: '50px', marginTop: '25px'}} className="content-section implementation">
- 
-            <h4>The following scopes exist within the selected file</h4>
-            <ListBox value={this.state.car} filter={true} filterPlaceholder="Search" options={scopeNameList} onChange={(e) => this.setState({car: e.value})} itemTemplate={this.carTemplate}
-                            style={{width:'500px'}} listStyle={{}}/>
+        <div style={{background:'', padding: '25px 25px 0 25px', height: '100%', width: '100%'}}>
+          <div style={{ height: '100%', padding: '25px 25px 0 25px', width: '100%', borderRadius: '' , border: ''}}>
+
+            {/* ######################################### primär slot ####### generic ########### myObject ######################################### */}
+
+            <ClassMatcherCreateComponent/>
+            <ClassMatcherName/>
+
+
+
+          </div>
         </div>
            
       </div>
@@ -146,7 +184,7 @@ class ScopeEditor extends React.Component {
   }
 }
 
-ScopeEditor.propTypes = {
+TreeTableEditor.propTypes = {
   /** The configuration object */
   config: PropTypes.object,
   /** The config file schema */
@@ -159,8 +197,8 @@ ScopeEditor.propTypes = {
   onUpdate: PropTypes.func,
 };
 
-ScopeEditor.defaultProps = {
+TreeTableEditor.defaultProps = {
   loading: false,
 };
 
-export default ScopeEditor;
+export default TreeTableEditor;
