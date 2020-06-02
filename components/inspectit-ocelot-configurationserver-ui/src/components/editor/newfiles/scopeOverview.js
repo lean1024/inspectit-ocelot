@@ -11,6 +11,7 @@ import { Row } from 'primereact/row';
 import { TreeTable } from 'primereact/treetable';
 import PropTypes from 'prop-types';
 import React from 'react';
+import Router from 'next/router';
 
 // helper for a schema property type constants
 const schemaType = {
@@ -53,6 +54,9 @@ class ScopeEditor extends React.Component {
     this.setState({scopeNameList})
   }
 
+  handleOnEdit = () => {
+    Router.push('/google.com');
+  }
   
 
   render() {
@@ -135,10 +139,60 @@ class ScopeEditor extends React.Component {
         `}</style>
  
         <div style={{ marginLeft: '50px', marginTop: '25px'}} className="content-section implementation">
+
+        {/* {
+          showEditor && !showScopeView && !showTreeTableView && 
+          <div className="p-col editor-container">
+              <AceEditor editorRef={(editor) => this.editor = editor} onCreate={onCreate} mode="yaml" theme="cobalt" options={editorConfig} value={value} onChange={onChange} canSave={canSave} onSave={this.handleSave} readOnly={readOnly} />
+          </div>
+        }
+        {
+          showEditor && showScopeView &&
+          <div className="p-col visual-editor-container">
+              <VisualEditor yamlConfig={value} onUpdate={onChange}>
+                  {(onUpdate, config) => (
+                      // 'OR Statement here?'
+                      <ScopeEditor config={config} schema={schema} loading={loading} readOnly={readOnly} onUpdate={onUpdate} />
+                  )}
+              </VisualEditor>
+              
+          </div>
+        }
+        {
+          showEditor && showTreeTableView &&
+          <div className="p-col visual-editor-container">
+              <VisualEditor yamlConfig={value} onUpdate={onChange}>
+                  {(onUpdate, config) => (
+                      <TreeTableEditor config={config} schema={schema} loading={loading} readOnly={readOnly} onUpdate={onUpdate} />
+                  )}
+              </VisualEditor>
+              
+          </div>
+        }
+        {
+          !showEditor &&
+          <div className="p-col">
+              <div className="selection-information">
+                  <div>{hint}</div>
+              </div>
+          </div>
+        }
+        {loading && (
+          <div className="p-col">
+            <div className="loading-overlay">
+              <i className="pi pi-spin pi-spinner" style={{ fontSize: '2em' }}></i>
+            </div>
+          </div>
+        )} */}
  
             <h4>The following scopes exist within the selected file</h4>
             <ListBox value={this.state.car} filter={true} filterPlaceholder="Search" options={scopeNameList} onChange={(e) => this.setState({car: e.value})} itemTemplate={this.carTemplate}
-                            style={{width:'500px'}} listStyle={{}}/>
+              style={{width:'500px'}} listStyle={{}}/>
+            <div style={{ margin: '25px'}}>
+              <Button onClick={this.createOption} label="create new" style={{ padding: '5px' , background: 'rgb(139, 172, 189)', margin: '5px'}}> </Button>
+              <Button onClick={this.handleOnEdit} label="edit" style={{ padding: '5px' , background: 'rgb(139, 172, 189)', margin: '5px'}}> </Button>
+              <Button onClick={this.deleteOption} label="delete" style={{ padding: '5px' , background: 'rgb(139, 172, 189)', margin: '5px'}}> </Button>
+            </div>
         </div>
            
       </div>

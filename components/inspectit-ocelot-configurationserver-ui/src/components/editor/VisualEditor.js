@@ -14,11 +14,11 @@ class VisualEditor extends React.Component {
     };
   }
 
-  componentDidMount() {
-    this.parseAndUpdateState();
+  componentWillMount() {
+    this.parseAndUpdateState();  
   }
-
-  componentDidUpdate(prevProps) {
+  
+  componentWillUpdate(prevProps) {
     if (prevProps.yamlConfig !== this.props.yamlConfig) {
       this.parseAndUpdateState();
     }
