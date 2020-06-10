@@ -16,7 +16,7 @@ const EditorToolbar = ({
   isRefreshing,
   canSave,
   visualConfig,
-  onVisualConfigChange,
+  handleDisplayOfView,
   children,
 }) => (
   <div className="this">
@@ -40,8 +40,8 @@ const EditorToolbar = ({
     <Toolbar>
       <div className="p-toolbar-group-left">{children}</div>
       <div className="p-toolbar-group-right button-not-active">
-        <Button disabled={!enableButtons} icon="pi pi-sitemap" className={!visualConfig && "p-button-outlined"} onClick={() => {onVisualConfigChange('showScopeView')}} />
-        <Button disabled={!enableButtons} icon="pi pi-table" className={!visualConfig && "p-button-outlined"} onClick={() => {onVisualConfigChange('showTreeTableView')}} />
+        <Button disabled={!enableButtons} icon="pi pi-sitemap" className={!visualConfig && "p-button-outlined"} onClick={() => {handleDisplayOfView('showScopeView')}} />
+        <Button disabled={!enableButtons} icon="pi pi-table" className={!visualConfig && "p-button-outlined"} onClick={() => {handleDisplayOfView('showTreeTableView')}} />
  
         {onRefresh && (
           <Button disabled={!enableButtons || isRefreshing} icon={'pi pi-refresh' + (isRefreshing ? ' pi-spin' : '')} onClick={onRefresh} />

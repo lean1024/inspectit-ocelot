@@ -15,6 +15,39 @@ const TreeTableEditor = dynamic(() => import('./TreeTableEditor'), { ssr: false 
  *
  */
 class EditorView extends React.Component {
+
+  state = {
+    showScopeView: false,
+    showBusinessTransactionView: false,
+    showTreeTableView: false,
+  }
+
+  handleDisplayOfView = (viewType) => {
+    switch (viewType) {
+      case 'showScopeView': 
+        this.setState({
+            showScopeView: !this.state.showScopeView,
+            showBusinessTransactionView: false,
+            showTreeTableView: false,
+        });
+        break;
+      case 'showBusinessTransactionView': 
+        this.setState( {
+            showScopeView: false,
+            showBusinessTransactionView: !this.state.showBusinessTransactionView,
+            showTreeTableView: false,
+        });
+        break;
+      case 'showTreeTableView': 
+        this.setState({
+            showScopeView: false,
+            showBusinessTransactionView: false,
+            showTreeTableView: !this.state.showTreeTableView,
+        });
+        break;
+    }
+  }
+
   render() {
     const {
       value,
@@ -35,11 +68,10 @@ class EditorView extends React.Component {
       children,
       readOnly,
       showVisualConfigurationView,
-      onToggleVisualConfigurationView,
-      showScopeView,
-      showTreeTableView,
-      showBusinessTransactionView, 
+      onToggleVisualConfigurationView, 
     } = this.props;
+
+    const { showScopeView, showTreeTableView, showBusinessTransactionView } = this.state;
 
     return (
       <div className="this p-grid p-dir-col p-nogutter">
@@ -84,7 +116,7 @@ class EditorView extends React.Component {
             onSave={onSave}
             onSearch={() => this.editor.executeCommand('find')}
             onHelp={() => this.editor.showShortcuts()}
-            onVisualConfigChange={onToggleVisualConfigurationView}
+            handleDisplayOfView={this.handleDisplayOfView}
             showScopeView= {showScopeView} 
             showBusinessTransactionView= {showBusinessTransactionView} 
             showTreeTableView = {showTreeTableView}

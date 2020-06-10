@@ -13,6 +13,9 @@ import { TreeTable } from 'primereact/treetable';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import ClassSelector from './classMatcher/ClassSelector'
+
+
 // helper for a schema property type constants
 const schemaType = {
   COMPOSITE: 'COMPOSITE',
@@ -24,16 +27,47 @@ const schemaType = {
   ENUM: 'ENUM',
 };
 
-const DEFAULT_EXPANDED_KEYS = { inspectit: true };
+class ScopeContainer extends React.Component {
+  state = { showScopeEditOverview: true, showClassSelector: false, showMethodSelector: false }
 
-/**
- * Editor for showing the config file as the table tree.
- *
- * TODO what about duration
- * TODO what about enums (select box, but not used)
- * TODO what about the multiline strings
- */
-class TreeTableEditor extends React.Component {
+  componentWillMount(){
+    console.log('xaxa', this.props)
+  }
+
+  toggleShowClassSelector = () => {
+    this.setState({ 
+      showScopeEditOverview: false,
+      showClassSelector: true,
+      showMethodSelector: false
+    })
+  }
+
+  render(){
+    const { showScopeEditOverview, showClassSelector, showMethodSelector } = this.state;
+    const { config, scopeObject, updateBreadCrumbs, updateScopeObject } = this.props;
+    console.log('UUU', scopeObject)
+
+    return(
+      <React.Fragment>
+        { showScopeEditOverview && (
+          <Scope toggleShowClassSelector={this.toggleShowClassSelector} updateBreadCrumbs={updateBreadCrumbs} scopeObject={scopeObject} />
+        )}
+
+        { showClassSelector && (
+          <ClassSelector scopeObject={scopeObject} updateScopeObject={updateScopeObject} />
+        )}
+
+        { showMethodSelector && (
+          <Scope/>
+        )}
+
+
+      </React.Fragment>
+    )
+  }
+}
+
+class Scope extends React.Component {
 
   constructor() {
     super();
@@ -57,42 +91,51 @@ class TreeTableEditor extends React.Component {
 
   listItemMethod(options) {
 
-      return (
-          <div className="p-clearfix" style={{witdh:'900px', padding: '5px 0 5px 0', borderBottom:'4px solid #F0F0F0'}}>
-          {Object.keys(options).map(option => 
-            options[option] === false && (
-              <img src={`/images/${option}.png`} style={{ opacity: 0.1 , margin: '2px 0 2px 2px', marginLeft: '25px', width:80 }} />
-            ) ||        
-            options[option] !== false && (
-              <img src={`/images/${options[option]}.png`} style={{  display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '25px', width:80, outline: '2px solid grey' }} />
-            )
-          )}
+    return (
+        <div className="p-clearfix" style={{witdh:'900px', padding: '5px 0 5px 0', borderBottom:'4px solid #F0F0F0'}}>
+        {Object.keys(options).map(option => 
+          options[option] === false && (
+            <img src={`/images/${option}.png`} style={{ opacity: 0.1 , margin: '2px 0 2px 2px', marginLeft: '25px', width:80 }} />
+          ) ||        
+          options[option] !== false && (
+            <img src={`/images/${options[option]}.png`} style={{  display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '25px', width:80, outline: '2px solid grey' }} />
+          )
+        )}
 
-                {/* {console.log(options)}
-                <Button> oh </Button>
-                {Object.keys(options).map(option => {
-                <Button> nose </Button>
-                {console.log(options[option])}
+              {/* {console.log(options)}
+              <Button> oh </Button>
+              {Object.keys(options).map(option => {
+              <Button> nose </Button>
+              {console.log(options[option])}
 
-                  options[option] === false && (
-                    <img src="/images/name.png" style={{ visibility: 'hidden', margin: '2px 0 2px 2px', marginLeft: '15px', width:50 }} />
-                  )
-                  options[option] !== false && (
-                    <img src={`/images/${options[option]}.png`} style={{  display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '15px', width:50 }} />
-                  )
-                })} */}
-                  {/* <img src="/images/name.png" style={{ display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '15px', width:50 }} />
-                  <img src="/images/visibility.png" style={{ display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '15px', width:50 }} />
-                  <img src="/images/interface.png" style={{ display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '15px', width:32 }} />
-                  <img src="/images/object.png" style={{ display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '20px', width:32 }} />
-                  <img src="/images/at-symbol.jpg" style={{ display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '15px', width:32 }} /> */}
-          </div>
+                options[option] === false && (
+                  <img src="/images/name.png" style={{ visibility: 'hidden', margin: '2px 0 2px 2px', marginLeft: '15px', width:50 }} />
+                )
+                options[option] !== false && (
+                  <img src={`/images/${options[option]}.png`} style={{  display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '15px', width:50 }} />
+                )
+              })} */}
+                {/* <img src="/images/name.png" style={{ display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '15px', width:50 }} />
+                <img src="/images/visibility.png" style={{ display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '15px', width:50 }} />
+                <img src="/images/interface.png" style={{ display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '15px', width:32 }} />
+                <img src="/images/object.png" style={{ display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '20px', width:32 }} />
+                <img src="/images/at-symbol.jpg" style={{ display: 'inline-block', margin: '2px 0 2px 2px', marginLeft: '15px', width:32 }} /> */}
+        </div>
       );
+  }
+
+  handleClassSelectorButton = () => {
+    const { toggleShowClassSelector, updateBreadCrumbs } = this.props;
+    let label = {'label': 'Class Selector'};
+    let removeLastCrumb = false;
+    updateBreadCrumbs(label, removeLastCrumb)
+    toggleShowClassSelector();
   }
   
 
   render() {
     const { icon_scopeName, icon_classSelector, icon_methodSelector } = this.state;
+    const { toggleShowClassSelector, scopeObject } = this.props;
 
   const options = [
     {name: 'name', visibility: 'visibility', interface: 'interface', object:'object', annotation: 'annotation', },
@@ -155,10 +198,10 @@ class TreeTableEditor extends React.Component {
  
         <div className="content-section implementation">
           <div className="content-section implementation">
-            <div style={{background:'ghostwhite', border: '1.5px solid #EEEEEE', padding: '25px'}}>
+            <div style={{background:'#EEEEEE', borderBottom: '1.5px solid white', padding: '25px'}}>
               <div style={{display:'flex', alignItems:'center'}}>
               <h3 style={{marginTop: '0px'}} className="first">scopename</h3>
-              <InputText style={{marginLeft: '50px'}}value={this.state.value1} onChange={(e) => this.setState({value1: e.target.value})} />
+              <InputText style={{marginLeft: '50px', width: '375px'}} value={scopeObject.scopeName} onChange={(e) => this.setState({value1: e.target.value})} />
               <span style={{marginLeft:'.5em'}}>{this.state.value1}</span>
              
               { !icon_scopeName && (
@@ -171,7 +214,7 @@ class TreeTableEditor extends React.Component {
               </div>
             </div>
 
-            <div style={{background:'ghostwhite', border: '1.5px solid #EEEEEE', padding: '25px'}}>
+            <div style={{background:'#EEEEEE', borderBottom: '1.5px solid white', padding: '25px'}}>
               <h3 style={{marginTop: '0px'}} >class selector</h3> 
               <div style={{display:'flex', alignItems:'center'}}>
                   <div  style={{maxWidth:'300px'}}>
@@ -180,7 +223,7 @@ class TreeTableEditor extends React.Component {
                     Only the classes, which fullfill all option's within your class selector will be utilized.
                   </span>
                 </div>
-              <Button style={{display: 'inline-block', marginLeft:'50px', padding:'10px'}}label="create class selector" />
+              <Button onClick={this.handleClassSelectorButton} style={{display: 'inline-block', marginLeft:'50px', padding:'10px'}}label="create class selector" />
               { !icon_classSelector && (
                 <i style={{border: '2px solid black', borderRadius:'15px', opacity: '0.1', marginLeft: '15px' }}className="pi pi-check"></i>
               )}
@@ -190,7 +233,7 @@ class TreeTableEditor extends React.Component {
               </div>
             </div>
 
-            <div style={{background:'ghostwhite', border: '1.5px solid #EEEEEE', padding: '25px'}}>
+            <div style={{background:'#EEEEEE', borderBottom: '1.5px solid white', padding: '25px'}}>
               <h3 style={{marginTop: '0px', marginBottom: '0px'}}>method selectors</h3>
               <div style={{display: 'flex'}}>
               <p>
@@ -237,7 +280,7 @@ class TreeTableEditor extends React.Component {
   }
 }
 
-TreeTableEditor.propTypes = {
+ScopeContainer.propTypes = {
   /** The configuration object */
   config: PropTypes.object,
   /** The config file schema */
@@ -250,8 +293,8 @@ TreeTableEditor.propTypes = {
   onUpdate: PropTypes.func,
 };
 
-TreeTableEditor.defaultProps = {
+ScopeContainer.defaultProps = {
   loading: false,
 };
 
-export default TreeTableEditor;
+export default ScopeContainer;

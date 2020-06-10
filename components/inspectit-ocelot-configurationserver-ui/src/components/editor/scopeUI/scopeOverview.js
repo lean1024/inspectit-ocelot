@@ -50,7 +50,6 @@ class ScopeEditor extends React.Component {
     Object.keys(scopes).map(name => {
       scopeNameList.push({label: name})
     })
-    console.log(scopeNameList)
     this.setState({scopeNameList})
   }
 
@@ -63,7 +62,6 @@ class ScopeEditor extends React.Component {
     const { loading, config, ...rest } = this.props;
     const { scopeNameList } = this.state;
 
-    console.log('tom', scopeNameList);
 
     const cities = [
       {name: 'New York', code: 'NY'},

@@ -1,21 +1,21 @@
-import {Dropdown} from 'primereact/dropdown';
-
-import {InputText} from 'primereact/inputtext';
 import {ListBox} from 'primereact/listbox';
-import {OrderList} from 'primereact/orderlist';
 
 import { cloneDeep, isEqual, set, unset } from 'lodash';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
+import { InputText } from 'primereact/inputtext';
 import { Menubar } from 'primereact/menubar';
 import { Message } from 'primereact/message';
 import { Row } from 'primereact/row';
 import { TreeTable } from 'primereact/treetable';
 import PropTypes from 'prop-types';
 import React from 'react';
-import ClassMatcherCreateComponent from './newfiles/class_naming/ClassMatcherCreateComponent';
-import ClassMatcherName from './newfiles/class_naming/ClassMatcherName';
+import Scope from './scopeUI/ScopeContainer';
+import { BreadCrumb } from 'primereact/breadcrumb';
+
+import deepCopy from 'json-deep-copy'
+
 
 // helper for a schema property type constants
 const schemaType = {
@@ -37,84 +37,121 @@ const DEFAULT_EXPANDED_KEYS = { inspectit: true };
  * TODO what about enums (select box, but not used)
  * TODO what about the multiline strings
  */
-class TreeTableEditor extends React.Component {
+class ScopeEditor extends React.Component {
 
   constructor() {
     super();
     this.state = {
-        icon_scopeName: false,
-        icon_classSelector: false,
-        icon_methodSelector: false,
-        value: null,
-        cars: null
+        city: null,
+        cities: null,
+        car: 'BMW',
+        showOverview: true,
+        breadCrumbItems: [
+          { label: 'Scope Overview' },
+        ]
     };
-
+  }
+      
+  componentDidMount(){
+    let scopes = this.props.config.inspectit.instrumentation.scopes
+    let scopeNameList = [];
+    Object.keys(scopes).map(name => {
+      scopeNameList.push({label: name})
+    })
+    this.setState({scopeNameList})
   }
 
-  handleClick = () => {
-    alert('oh noe')
+  handleOnEdit = (e) => {
+    this.setState({ showOverview: false})
+  }
+
+
+  handleDoubleClick = (e) => {
+    const name = e.target.dataset.name
+    const { config } = this.props;
+    const { breadCrumbItems } = this.state;
+
+    console.log('config', config);
+
+    // getting the correct single scopeObject to pass as props
+    let scopeObject = config.inspectit.instrumentation.scopes[name]
+    scopeObject = this.createArrayInScopeObject(scopeObject);
+
+    // breadCrumbs
+    scopeObject['scopeName'] = name;
+    breadCrumbItems.push({'label': name});
+    this.setState({ scopeObject, showOverview: false, breadCrumbItems})
+  }
+
+  // type and superclass are not nested inside an array. Each option should look same in the json. This can then be used in a single component
+  createArrayInScopeObject = (scopeObject) => {
+    if ( scopeObject.type ) {
+      let type = deepCopy(scopeObject.type);
+      scopeObject.type = [type];
+    }
+    if ( scopeObject.superclass ) {
+      let superclass = deepCopy(scopeObject.superclass);
+      scopeObject.superclass = [superclass];
+    }
+    return scopeObject;
+  }
+
+  // type and superclass are not nested inside an array in the original schema. Removing the array to match original schema.
+  removeArrayInScopeObject = (scopeObject) => {
+    if ( Array.isArray(scopeObject.type) ) {
+      let type = deepCopy(scopeObject.type[0]);
+      scopeObject.type = type;
+    }
+    if ( Array.isArray(scopeObject.superclass) ) {
+      let superclass = deepCopy(scopeObject.superclass[0]);
+      scopeObject.superclass = superclass;
+    }
+    return scopeObject;
+  }
+
+  updateBreadCrumbs = (label, removeLastCrumb) => {
+    let { breadCrumbItems } = this.state;
+    if(removeLastCrumb) {
+      breadCrumbItems.pop()
+      this.setState({ breadCrumbItems})
+      return
+    }
+    breadCrumbItems.push(label);
+    this.setState({ breadCrumbItems});
+    return;
   }
   
+  carTemplate = (option) => {
+    return (
+        <div >
+          <p data-name={option.label} onDoubleClick={this.handleDoubleClick}> {option.label}> {option.label} </p>
+        </div>
+    );
+  }
+
+  updateScopeObject = (scopeName, scopeObject) => {
+    // updating the scopeObject in state
+    // this variable is being passed down, and must be updated
+    // this variable is only setted in the doubleClick elsewise.
+    console.log('vorher',scopeObject)
+  
+    let copy = deepCopy(scopeObject)
+    this.setState({ scopeObject: copy})
+
+    
+    let { onUpdate, config } = this.props;
+    scopeObject = this.removeArrayInScopeObject(scopeObject);
+    // added scopeName key to remember the name, removing it here.
+    if (scopeObject.scopeName ) delete scopeObject['scopeName'];
+    config.inspectit.instrumentation.scopes[scopeName] = scopeObject;
+    onUpdate(config);
+    console.log('nacher',scopeObject)
+  }
 
   render() {
-    const citySelectItems = [
-      {label: 'EQUALS_FULLY', value: 'EQUALS_FULLY'},
-      {label: 'STARTS_WITH', value: 'STARTS_WITH'},
-      {label: 'STARTS_WITH_IGNORE_CASE', value: 'STARTS_WITH_IGNORE_CASE'},
-      {label: 'CONTAINS', value: 'CONTAINS'},
-      {label: 'CONTAINS_IGNORE_CASE', value: 'CONTAINS_IGNORE_CASE'},
-      {label: 'ENDS_WITH', value: 'ENDS_WITH'},
-      {label: 'ENDS_WITH_IGNORE_CASE', value: 'ENDS_WITH_IGNORE_CASE'},
-    ];
-
-    // const background_bigDiv = "#ececee"; 
-    // const background_uberSchriftDiv = "#fdfdfd";
-    // const background_middleDiv  = "whitesmoke"
-    // const background_extraField = "#fdfdfd";
-    // const color_uberSchriftText = "#c06c84";
-    // const color_elementSchrift = "darkslateblue";
-
-    // const background_bigDiv = "ghostwhite";   
-    // // const background_bigDiv = "#bccace";
-    // const background_uberSchriftDiv = "#fa9581";
-    // const background_middleDiv = "whitesmoke"; 
-    // const background_extraField = "whitesmoke";
-    // const color_uberSchriftText = "whitesmoke";
-    // const color_elementSchrift = "slategrey";
-
-    const background_bigDiv = "lightsteelblue";   
-    // const background_bigDiv = "#bccace";
-    const background_uberSchriftDiv = "#fa9581";
-    const background_middleDiv = "#8bacbd"; 
-    const background_extraField = "whitesmoke";
-    const color_uberSchriftText = "whitesmoke";
-    const color_elementSchrift = "whitesmoke";
-
-    const classMatcherObject = {
-      names: {
-        0: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
-        1: {matcherMode: 'STARTS_WITH', term: "prefix"},
-        2: {matcherMode: 'ENDS_WITH', term: "suffix"},
-      },
-      interfaces: {
-        0: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
-        1: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
-        2: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
-      },
-      annotations: {
-        0: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
-        1: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
-        2: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
-      },
-      superclasses:{
-        0: {matcherMode: 'EQUALS_FULLY', term: "yourService"},
-      }
-
-    }
-
-   
-
- 
+    const { loading, config, ...rest } = this.props;
+    const { scopeNameList, showOverview, scopeObject, breadCrumbItems } = this.state;
+    console.log('render', scopeObject)
 
     return (
       <div className="this">
@@ -165,26 +202,33 @@ class TreeTableEditor extends React.Component {
             min-width: 96px;
           }
         `}</style>
- 
-        <div style={{background:'', padding: '25px 25px 0 25px', height: '100%', width: '100%'}}>
-          <div style={{ height: '100%', padding: '25px 25px 0 25px', width: '100%', borderRadius: '' , border: ''}}>
-
-            {/* ######################################### primär slot ####### generic ########### myObject ######################################### */}
-
-            <ClassMatcherCreateComponent/>
-            <ClassMatcherName/>
 
 
-
-          </div>
+        <div>
+          <BreadCrumb model={breadCrumbItems} home="/" />
+          {
+            showOverview && (
+              <div style={{ marginLeft: '50px', marginTop: '25px'}} className="content-section implementation">
+                <h4 >The following scopes exist within the selected file</h4>
+                <ListBox value={this.state.car} filter={true} filterPlaceholder="Search" options={scopeNameList} onChange={(e) => this.setState({car: e.value})} itemTemplate={this.carTemplate}
+                  style={{width:'500px'}} listStyle={{}}/>
+                <div style={{ margin: '25px'}}>
+                  <Button onClick={this.createOption} label="create new" style={{ padding: '5px' , background: 'rgb(139, 172, 189)', margin: '5px'}}> </Button>
+                  <Button onClick={this.handleOnEdit} label="edit" style={{ padding: '5px' , background: 'rgb(139, 172, 189)', margin: '5px'}}> </Button>
+                  <Button onDoubleClick={this.deleteOption} label="delete" style={{ padding: '5px' , background: 'rgb(139, 172, 189)', margin: '5px'}}> </Button>
+                </div>
+              </div>
+          )}
+          { !showOverview && (
+            <Scope config={config} scopeObject={scopeObject} updateBreadCrumbs={this.updateBreadCrumbs} updateScopeObject={this.updateScopeObject} />
+            )} 
         </div>
-           
       </div>
     );
   }
 }
 
-TreeTableEditor.propTypes = {
+ScopeEditor.propTypes = {
   /** The configuration object */
   config: PropTypes.object,
   /** The config file schema */
@@ -197,8 +241,8 @@ TreeTableEditor.propTypes = {
   onUpdate: PropTypes.func,
 };
 
-TreeTableEditor.defaultProps = {
+ScopeEditor.defaultProps = {
   loading: false,
 };
 
-export default TreeTableEditor;
+export default ScopeEditor;
