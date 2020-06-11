@@ -89,8 +89,11 @@ class ClassMatcherInterface extends React.Component {
     let { scopeObject } = this.state;   // this should come from props? and should be changed in an upper component?
     let type = e.target.name;
     let index = e.target.id;
+    let isArray = undefined;
+    if (index) { isArray=true};
     // let { scopeObject } = this.props;
-    scopeObject.names[index][type] = e.target.value;
+    if (isArray) scopeObject.names[index][type] = e.target.value;
+    if (!isArray) 
 
     this.setState({scopeObject: scopeObject}) // setScopeObject( scopeObject ); should be called here, it's a passed down function, which takes the new object and sets it
   }

@@ -65,6 +65,7 @@ class ScopeEditor extends React.Component {
     this.setState({ showOverview: false})
   }
 
+  componentWillUnmount(){ alert('unmounted')}
 
   handleDoubleClick = (e) => {
     const name = e.target.dataset.name
@@ -75,7 +76,7 @@ class ScopeEditor extends React.Component {
 
     // getting the correct single scopeObject to pass as props
     let scopeObject = config.inspectit.instrumentation.scopes[name]
-    scopeObject = this.createArrayInScopeObject(scopeObject);
+    // scopeObject = this.createArrayInScopeObject(scopeObject);
 
     // breadCrumbs
     scopeObject['scopeName'] = name;
@@ -84,30 +85,30 @@ class ScopeEditor extends React.Component {
   }
 
   // type and superclass are not nested inside an array. Each option should look same in the json. This can then be used in a single component
-  createArrayInScopeObject = (scopeObject) => {
-    if ( scopeObject.type ) {
-      let type = deepCopy(scopeObject.type);
-      scopeObject.type = [type];
-    }
-    if ( scopeObject.superclass ) {
-      let superclass = deepCopy(scopeObject.superclass);
-      scopeObject.superclass = [superclass];
-    }
-    return scopeObject;
-  }
+  // createArrayInScopeObject = (scopeObject) => {
+  //   if ( scopeObject.type ) {
+  //     let type = deepCopy(scopeObject.type);
+  //     scopeObject.type = [type];
+  //   }
+  //   if ( scopeObject.superclass ) {
+  //     let superclass = deepCopy(scopeObject.superclass);
+  //     scopeObject.superclass = [superclass];
+  //   }
+  //   return scopeObject;
+  // }
 
-  // type and superclass are not nested inside an array in the original schema. Removing the array to match original schema.
-  removeArrayInScopeObject = (scopeObject) => {
-    if ( Array.isArray(scopeObject.type) ) {
-      let type = deepCopy(scopeObject.type[0]);
-      scopeObject.type = type;
-    }
-    if ( Array.isArray(scopeObject.superclass) ) {
-      let superclass = deepCopy(scopeObject.superclass[0]);
-      scopeObject.superclass = superclass;
-    }
-    return scopeObject;
-  }
+  // // type and superclass are not nested inside an array in the original schema. Removing the array to match original schema.
+  // removeArrayInScopeObject = (scopeObject) => {
+  //   if ( Array.isArray(scopeObject.type) ) {
+  //     let type = deepCopy(scopeObject.type[0]);
+  //     scopeObject.type = type;
+  //   }
+  //   if ( Array.isArray(scopeObject.superclass) ) {
+  //     let superclass = deepCopy(scopeObject.superclass[0]);
+  //     scopeObject.superclass = superclass;
+  //   }
+  //   return scopeObject;
+  // }
 
   updateBreadCrumbs = (label, removeLastCrumb) => {
     let { breadCrumbItems } = this.state;
@@ -140,7 +141,8 @@ class ScopeEditor extends React.Component {
 
     
     let { onUpdate, config } = this.props;
-    scopeObject = this.removeArrayInScopeObject(scopeObject);
+    // scopeObject = this.removeArrayInScopeObject(scopeObject);
+    
     // added scopeName key to remember the name, removing it here.
     if (scopeObject.scopeName ) delete scopeObject['scopeName'];
     config.inspectit.instrumentation.scopes[scopeName] = scopeObject;

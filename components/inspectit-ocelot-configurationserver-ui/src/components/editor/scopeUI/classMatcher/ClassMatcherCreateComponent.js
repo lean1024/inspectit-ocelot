@@ -6,20 +6,31 @@ class ClassMatcherCreateComponent extends React.Component {
     
 
     createOption = (e) => {
+        // onHide to hide the Dialog component in which this ClassMatcherCreateComponent is opened
         const { updateScopeObject, scopeObject, onHide } = this.props;
         // each button got a data-attribute. We can use it to only use 1 handler function. parentElement to access the button with the data-attribute.
+        // Either the type, annotations, interfaces or superclass button is clicked to create an option. To differentiate we use the data-attribute. Only 1 createOption function instead of 4.
         const optionType = e.target.parentElement.dataset.optiontype; 
-        const dummyOption = {name: '', ['matcher-mode']: 'EQUALS_FULLY'};
+        const emptyOption = {name: '', ['matcher-mode']: 'EQUALS_FULLY'};
         
         // no entry under the optionType
         // creating a array. Filling it with a sample JSON
-        if ( !scopeObject[optionType]) {
-            scopeObject[optionType] = [dummyOption]
-        } else {
-            // entry exist, thus an array exist with a json. Adding a sample JSON. 
-            let targetArray = scopeObject[optionType];
-            targetArray.push(dummyOption);
-            scopeObject[optionType] = targetArray;
+
+        // first if: the inspectIT scheme wants an array for interfaces and annotations and no array for type and superclass
+        // second if: either an entry exist and we push an element to the array or we update the no array key (json), or no entry exist and we add the key ( array | no array )
+        if ( optionType === 'type' || optionType === 'superclass'){
+            scopeObject[optionType] = emptyOption;
+        }
+        if ( optionType === 'interfaces' || optionType === 'annotations') {
+            if ( scopeObject[optionType] ) { 
+                // entry exist
+                let targetArray = scopeObject[optionType];
+                targetArray.push(emptyOption);
+                scopeObject[optionType] = targetArray;
+            } else {
+                // no entry exist
+                scopeObject[optionType] = [emptyOption];
+            }
         }
         updateScopeObject(scopeObject.scopeName, scopeObject);
         onHide('displayModal');
@@ -28,9 +39,6 @@ class ClassMatcherCreateComponent extends React.Component {
     componentDidMount(){
         // document.addEventListener('keydown', (e) => { e.key === 'F' && console.log(this.state.classMatcherObject)})
         // document.addEventListener('keydown', (e) => { console.log(e.keyCode)})
-
-        
-          
     }
 
     navigateToConfirm = () => {}

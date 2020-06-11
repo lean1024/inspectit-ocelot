@@ -20,15 +20,20 @@ class EditorView extends React.Component {
     showScopeView: false,
     showBusinessTransactionView: false,
     showTreeTableView: false,
+    viewoptions: {},
+  }
+
+  updateScopeViewOptions = () => {
+    viewoptions
   }
 
   handleDisplayOfView = (viewType) => {
     switch (viewType) {
       case 'showScopeView': 
-        this.setState({
-            showScopeView: !this.state.showScopeView,
-            showBusinessTransactionView: false,
-            showTreeTableView: false,
+        this.setState( {
+          showScopeView:  !this.state.showScopeView,
+          showBusinessTransactionView: false,
+          showTreeTableView: false,
         });
         break;
       case 'showBusinessTransactionView': 
@@ -139,7 +144,6 @@ class EditorView extends React.Component {
                       <ScopeEditor config={config} schema={schema} loading={loading} readOnly={readOnly} onUpdate={onUpdate} />
                   )}
               </VisualEditor>
-              
           </div>
         }
         {

@@ -13,6 +13,9 @@ class ClassMatcherName extends React.Component {
 
   componentWillMount(){
     const { option } = this.props;
+
+    // option will either be type, superclass, annotations, interfaces
+    // since this component will be used for every option the written text should be adjusted
     switch(option) {
       case 'type':
         this.setState({upperText: 'have a specific class name', type: 'class name'
@@ -30,7 +33,7 @@ class ClassMatcherName extends React.Component {
     }
   }
     
-    
+  // the "add" and "remove" icons indicate which div they will remove with a red outline 
   handleMouseOver = (e) => {
     let tooltip = e.target.previousSibling;
     let optionDiv = document.getElementById('nameDiv');
@@ -79,29 +82,43 @@ class ClassMatcherName extends React.Component {
     let { scopeObject, updateScopeObject, option } = this.props;
     let type = e.target.name;
     let index = e.target.id;
-    console.log('')
-    console.log('')
-    console.log('')
-    console.log('scopeObject',scopeObject)
-    scopeObject[option][index][type] = e.target.value;
+    let isArray = undefined;
+    if (option === 'interfaces' || option === 'annotations') isArray=true;
+
+    // the scopeObject is at the target key an array (interfaces) and must be handled like one
+    if(isArray) scopeObject[option][index][type] = e.target.value;
+    // the scopeObject is at the target key not an array (type, superclass)
+    if(!isArray) scopeObject[option][type] = e.target.value;
+
     let scopeName = scopeObject.scopeName;
     updateScopeObject(scopeName, scopeObject)
   }
 
+  // the item can be inside a array (interfaces)
+  // the item can be not inside an array (type, superclass)
+  // index is not undefined if the option is an array
   deleteItem = (e) => {
     let { scopeObject, updateScopeObject, option } = this.props;
     let index = e.target.id;
+    let isArray = undefined;
+    if (index) { isArray=true};
 
-    // removing the element
-    let targetArray = scopeObject[option];
-    targetArray.splice(index,1);
+    // removing the element out of the scopeObject
+    if ( isArray) {
+      let targetArray = scopeObject[option];
+      targetArray.splice(index,1);
 
-    // removing option, if empty
-    if (targetArray.length < 1 ) {
+      // when the array gets empty, we remove the whole option out of the scopeObject
+      if (targetArray.length < 1 ) {
+        delete scopeObject[option];
+      } else {
+        // updating the targetarray in the scopeObject;
+        scopeObject[option] = targetArray;
+      }
+    }
+
+    if ( !isArray ) {
       delete scopeObject[option];
-    } else {
-      // updating the targetarray in the scopeObject;
-      scopeObject[option] = targetArray;
     }
 
 
@@ -110,6 +127,8 @@ class ClassMatcherName extends React.Component {
     updateScopeObject(scopeName, scopeObject)
   }
 
+  // removing an option means to delete the corresponding key in scopeObject(type, interface, superclass )
+  // TODO: anootation can be passed as option, but is only a nested key of type and interfaces
   removeOption = () => {
     let { scopeObject, updateScopeObject, option } = this.props;
     delete scopeObject[option];
@@ -119,25 +138,44 @@ class ClassMatcherName extends React.Component {
     updateScopeObject(scopeName, scopeObject)
   }
 
+  // div, which contains an item for an option
+  itemTemplate = (entry, index) => {
+    const { type } = this.state;
+    const background_bigDiv = "lightsteelblue";   
+    // const background_bigDiv = "#bccace";
+    const background_uberSchriftDiv = "#fa9581";
+    const background_middleDiv = "#8bacbd"; 
+    const background_extraField = "whitesmoke";
+    const color_uberSchriftText = "whitesmoke";
+    const color_elementSchrift = "whitesmoke";
+
+    // data
+    const dropdownOptions = [
+      {label: 'EQUALS_FULLY', value: 'EQUALS_FULLY'},
+      {label: 'STARTS_WITH', value: 'STARTS_WITH'},
+      {label: 'STARTS_WITH_IGNORE_CASE', value: 'STARTS_WITH_IGNORE_CASE'},
+      {label: 'CONTAINS', value: 'CONTAINS'},
+      {label: 'CONTAINS_IGNORE_CASE', value: 'CONTAINS_IGNORE_CASE'},
+      {label: 'ENDS_WITH', value: 'ENDS_WITH'},
+      {label: 'ENDS_WITH_IGNORE_CASE', value: 'ENDS_WITH_IGNORE_CASE'},
+    ];
+    return (
+      <div style={{display: 'inline-flex',  marginBottom: '5px', position:'relative', background: background_middleDiv, padding: '10px 30px 0px 10px', borderRadius:'10px'}}>
+        <p style={{ color: color_elementSchrift}}> The {type} </p>
+        <Dropdown name='matcher-mode' id={index} style={{marginLeft:'10px', fontSize: '13px',  position: 'relative', height:'35px', bottom: '-5px'}} value={entry['matcher-mode']} options={dropdownOptions} onChange={this.handleChange} placeholder="EQUALS_FULLY"/>
+        <p style={{  color: color_elementSchrift ,  marginLeft: '10px' }}>the term</p>
+        <InputText name='name' id={index} style={{ textAlign: 'middle', marginLeft: '10px' , position: 'relative',  height:'35px', bottom: '-5px'}} value={entry.name} onChange={this.handleChange} />
+        <i name='name' id={index}  onMouseOver={this.handleItemRemoveOver} onMouseLeave={this.handleItemRemoveLeave} onClick={this.deleteItem} style={{ position: 'absolute', bottom:'0px', right: '0px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"/>
+      </div>
+    )
+  }
+
   render(){
     // const { scopeObject } = this.state;
     const { upperText, type } = this.state;
     const { scopeObject, option } = this.props;
-    console.log('')
-    console.log('')
-    console.log('ClassMatcherName scopeObject', scopeObject)
- 
 
-  // data
-    const citySelectItems = [
-        {label: 'EQUALS_FULLY', value: 'EQUALS_FULLY'},
-        {label: 'STARTS_WITH', value: 'STARTS_WITH'},
-        {label: 'STARTS_WITH_IGNORE_CASE', value: 'STARTS_WITH_IGNORE_CASE'},
-        {label: 'CONTAINS', value: 'CONTAINS'},
-        {label: 'CONTAINS_IGNORE_CASE', value: 'CONTAINS_IGNORE_CASE'},
-        {label: 'ENDS_WITH', value: 'ENDS_WITH'},
-        {label: 'ENDS_WITH_IGNORE_CASE', value: 'ENDS_WITH_IGNORE_CASE'},
-    ];
+
     
     const background_bigDiv = "lightsteelblue";   
     // const background_bigDiv = "#bccace";
@@ -177,25 +215,23 @@ class ClassMatcherName extends React.Component {
                 <React.Fragment>
                   <div style={{display: 'inline-flex',  marginBottom: '15px', position:'relative', background: background_middleDiv, padding: '15px 30px 15px 15px', borderRadius:'10px'}}>
                     <p style={{ color: color_elementSchrift}}> The class name</p>
-                    <Dropdown name='matcherMode' id={index} style={{marginLeft:'10px', position: 'relative', height:'35px', bottom: '-5px'}} value={entry.matcherMode} options={citySelectItems} onChange={this.handleChange} placeholder="EQUALS_FULLY"/>
+                    <Dropdown name='matcherMode' id={index} style={{marginLeft:'10px', position: 'relative', height:'35px', bottom: '-5px'}} value={entry.matcherMode} options={dropdownOptions} onChange={this.handleChange} placeholder="EQUALS_FULLY"/>
                     <p style={{  color: color_elementSchrift ,  marginLeft: '10px' }}>the term</p>
                     <InputText name='term' id={index} style={{ textAlign: 'middle', marginLeft: '10px' , position: 'relative',  height:'35px', bottom: '-5px'}} value={entry.term} onChange={this.handleChange} />
                     <i onMouseOver={this.handleItemRemoveOver} onMouseLeave={this.handleItemRemoveLeave} onClick={this.handleClick} style={{ position: 'absolute', bottom:'0px', right: '0px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"></i>
                   </div>
                 </React.Fragment>
                 )} */}
-
-                { Array.isArray(scopeObject[option]) && eigeneFunction }
-
-                { scopeObject[option] && scopeObject[option].map((entry,index) => 
-                  <div style={{display: 'inline-flex',  marginBottom: '5px', position:'relative', background: background_middleDiv, padding: '10px 30px 0px 10px', borderRadius:'10px'}}>
-                    <p style={{ color: color_elementSchrift}}> The {type} </p>
-                    <Dropdown name='matcher-mode' id={index} style={{marginLeft:'10px', fontSize: '13px',  position: 'relative', height:'35px', bottom: '-5px'}} value={entry['matcher-mode']} options={citySelectItems} onChange={this.handleChange} placeholder="EQUALS_FULLY"/>
-                    <p style={{  color: color_elementSchrift ,  marginLeft: '10px' }}>the term</p>
-                    <InputText name='name' id={index} style={{ textAlign: 'middle', marginLeft: '10px' , position: 'relative',  height:'35px', bottom: '-5px'}} value={entry.name} onChange={this.handleChange} />
-                    <i name='name' id={index}  onMouseOver={this.handleItemRemoveOver} onMouseLeave={this.handleItemRemoveLeave} onClick={this.deleteItem} style={{ position: 'absolute', bottom:'0px', right: '0px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"/>
-                  </div>
+                 { console.log(scopeObject)}
+                 { console.log(option)}
+                 { console.log(scopeObject[option])}
+                 { console.log( Array.isArray(scopeObject[option]))}
+                { scopeObject[option] && Array.isArray(scopeObject[option]) && scopeObject[option].map((entry,index) => 
+                  this.itemTemplate(entry,index)
                 )}
+
+                { scopeObject[option] && !Array.isArray(scopeObject[option]) && this.itemTemplate(scopeObject[option])}
+
               </div>
               {/* <div style={{ display:'flex', padding: '25px' , height:'80px', outline:'',  marginBottom: '5px',  width:'588px' , borderRadius:'10px', border: `2px solid ${background_middleDiv}`}}>
                 <i onMouseOver={this.handleAddItemOver} onMouseLeave={this.handleAddItemLeave} onClick={this.handleClick} style={{ position: '', bottom:'', left: '', fontSize:'30px',  color:'whitesmoke'}} className="pi pi-plus-circle"></i>
@@ -219,7 +255,7 @@ class ClassMatcherName extends React.Component {
               <React.Fragment>
                 <div style={{display: 'inline-flex',  marginBottom: '15px', position:'relative', background: background_middleDiv, padding: '15px 30px 15px 15px', borderRadius:'10px'}}>
                   <p style={{ color: color_elementSchrift}}> The wanted name of the class </p>
-                  <Dropdown style={{marginLeft:'10px', position: 'relative', height:'35px', bottom: '-5px'}} value={scopeObject.names[entry].matcherMode} options={citySelectItems} onChange={(e) => {this.setState({city: e.value})}} placeholder="EQUALS_FULLY"/>
+                  <Dropdown style={{marginLeft:'10px', position: 'relative', height:'35px', bottom: '-5px'}} value={scopeObject.names[entry].matcherMode} options={dropdownOptions} onChange={(e) => {this.setState({city: e.value})}} placeholder="EQUALS_FULLY"/>
                   <p style={{  color: color_elementSchrift ,  marginLeft: '10px' }}>the term</p>
                   <InputText style={{textAlign: 'middle', marginLeft: '10px' , position: 'relative',  height:'35px', bottom: '-5px'}} value={scopeObject.names[entry].term} onChange={(e) => this.setState({value: e.target.value})} />
                   <i onClick={this.handleClick} style={{ position: 'absolute', bottom:'0px', right: '0px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"></i>
