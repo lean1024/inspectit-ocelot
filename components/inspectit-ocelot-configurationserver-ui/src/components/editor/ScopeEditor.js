@@ -48,24 +48,27 @@ class ScopeEditor extends React.Component {
         showOverview: true,
         breadCrumbItems: [
           { label: 'Scope Overview' },
-        ]
+        ],
+        scopeObject: { inspectit:  {instrumentation: {scopes: {}}}}
     };
   }
       
   componentDidMount(){
-    let scopes = this.props.config.inspectit.instrumentation.scopes
-    let scopeNameList = [];
-    Object.keys(scopes).map(name => {
-      scopeNameList.push({label: name})
-    })
-    this.setState({scopeNameList})
+    // if is necessary, since config object is empty. The component does always "exist" since we only hide it with display: 'none
+    // display none is because #info1
+    if( this.props.config.inspectit) {
+      let scopes = this.props.config.inspectit.instrumentation.scopes
+      let scopeNameList = [];
+      Object.keys(scopes).map(name => {
+        scopeNameList.push({label: name})
+      })
+      this.setState({scopeNameList})
+    }
   }
 
   handleOnEdit = (e) => {
     this.setState({ showOverview: false})
   }
-
-  componentWillUnmount(){ alert('unmounted')}
 
   handleDoubleClick = (e) => {
     const name = e.target.dataset.name

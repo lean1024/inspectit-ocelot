@@ -20,16 +20,13 @@ class EditorView extends React.Component {
     showScopeView: false,
     showBusinessTransactionView: false,
     showTreeTableView: false,
-    viewoptions: {},
-  }
-
-  updateScopeViewOptions = () => {
-    viewoptions
+    displayScopeEditor: 'none',
   }
 
   handleDisplayOfView = (viewType) => {
     switch (viewType) {
       case 'showScopeView': 
+        this.state.displayScopeEditor === 'none' ? this.setState({ displayScopeEditor: 'flex'}) : this.setState({ displayScopeEditor: 'none'});
         this.setState( {
           showScopeView:  !this.state.showScopeView,
           showBusinessTransactionView: false,
@@ -76,7 +73,7 @@ class EditorView extends React.Component {
       onToggleVisualConfigurationView, 
     } = this.props;
 
-    const { showScopeView, showTreeTableView, showBusinessTransactionView } = this.state;
+    const { showScopeView, showTreeTableView, showBusinessTransactionView, displayScopeEditor } = this.state;
 
     return (
       <div className="this p-grid p-dir-col p-nogutter">
@@ -136,14 +133,16 @@ class EditorView extends React.Component {
           </div>
         }
         {
-          showEditor && showScopeView &&
-          <div className="p-col visual-editor-container">
-              <VisualEditor yamlConfig={value} onUpdate={onChange}>
-                  {(onUpdate, config) => (
-                      // 'OR Statement here?'
-                      <ScopeEditor config={config} schema={schema} loading={loading} readOnly={readOnly} onUpdate={onUpdate} />
-                  )}
-              </VisualEditor>
+          showEditor &&
+          <div style={{display: displayScopeEditor}}>
+            <div className="p-col visual-editor-container">
+                <VisualEditor yamlConfig={value} onUpdate={onChange}>
+                    {(onUpdate, config) => (
+                        // 'OR Statement here?'
+                        <ScopeEditor config={config} schema={schema} loading={loading} readOnly={readOnly} onUpdate={onUpdate} />
+                    )}
+                </VisualEditor>
+            </div>
           </div>
         }
         {
