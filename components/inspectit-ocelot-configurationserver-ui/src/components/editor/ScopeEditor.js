@@ -52,12 +52,12 @@ class ScopeEditor extends React.Component {
         scopeObject: { inspectit:  {instrumentation: {scopes: {}}}}
     };
   }
+
+  displayOverview = () => this.setState({ showOverview: true})
       
-  componentDidMount(){
-    // if is necessary, since config object is empty. The component does always "exist" since we only hide it with display: 'none
-    // display none is because #info1
-    if( this.props.config.inspectit) {
-      let scopes = this.props.config.inspectit.instrumentation.scopes
+  setScopeNamesFromConfig = () => {
+    if( this.props.config.inspectit &&  this.props.config.inspectit.instrumentation && this.props.config.inspectit.instrumentation.scopes) {
+      let scopes = this.props.config.inspectit.instrumentation.scopes;
       let scopeNameList = [];
       Object.keys(scopes).map(name => {
         scopeNameList.push({label: name})
@@ -66,24 +66,47 @@ class ScopeEditor extends React.Component {
     }
   }
 
+  handleBreadCrumbClick = () => {
+    this.setState({ breadCrumbItems: [{ label: 'Scope Overview' }]});
+    console.log('##################################')
+    this.displayOverview();
+  }
+
+  // <BreadCrumb> does not enable onClick listener on the elements, this manually adding.
+  addEventListenerToBreadCrumbs = () => {
+    // Array.from(htmlCollection)
+    let breadCrumbArray = Array.from(document.getElementsByClassName('p-breadcrumb p-component')[0].getElementsByClassName('p-menuitem-link'));
+    console.log(breadCrumbArray);
+    breadCrumbArray.map(element => {
+      if( element.innerText === 'Scope Overview' ) {
+        element.addEventListener('click', this.handleBreadCrumbClick);
+      }
+    })
+
+  }
+
+  componentDidMount(){
+    // if is necessary, since config object is empty. The component does always "exist" since we only hide it with display: 'none
+    // display none is because #info1
+    this.setScopeNamesFromConfig();
+    this.addEventListenerToBreadCrumbs();
+
+  }
+
   handleOnEdit = (e) => {
     this.setState({ showOverview: false})
   }
 
   handleDoubleClick = (e) => {
-    const name = e.target.dataset.name
+    const name = e.target.dataset.name;
     const { config } = this.props;
-    const { breadCrumbItems } = this.state;
-
-    console.log('config', config);
 
     // getting the correct single scopeObject to pass as props
-    let scopeObject = config.inspectit.instrumentation.scopes[name]
+    let scopeObject = config.inspectit.instrumentation.scopes[name];
+    scopeObject['scopeName'] = name;
     // scopeObject = this.createArrayInScopeObject(scopeObject);
 
-    // breadCrumbs
-    scopeObject['scopeName'] = name;
-    breadCrumbItems.push({'label': name});
+    const breadCrumbItems = [{'label': 'Scope Overview'}, {'label': name }];
     this.setState({ scopeObject, showOverview: false, breadCrumbItems})
   }
 
@@ -113,22 +136,12 @@ class ScopeEditor extends React.Component {
   //   return scopeObject;
   // }
 
-  updateBreadCrumbs = (label, removeLastCrumb) => {
-    let { breadCrumbItems } = this.state;
-    if(removeLastCrumb) {
-      breadCrumbItems.pop()
-      this.setState({ breadCrumbItems})
-      return
-    }
-    breadCrumbItems.push(label);
-    this.setState({ breadCrumbItems});
-    return;
-  }
+  updateBreadCrumbs = breadCrumbItems => this.setState({ breadCrumbItems});
   
   carTemplate = (option) => {
     return (
         <div >
-          <p data-name={option.label} onDoubleClick={this.handleDoubleClick}> {option.label}> {option.label} </p>
+          <p data-name={option.label} onDoubleClick={this.handleDoubleClick}> {option.label} </p>
         </div>
     );
   }
@@ -156,7 +169,8 @@ class ScopeEditor extends React.Component {
   render() {
     const { loading, config, ...rest } = this.props;
     const { scopeNameList, showOverview, scopeObject, breadCrumbItems } = this.state;
-    console.log('render', scopeObject)
+    console.log('breadCrumbItems: ');
+    console.log(breadCrumbItems);
 
     return (
       <div className="this">
@@ -210,7 +224,7 @@ class ScopeEditor extends React.Component {
 
 
         <div>
-          <BreadCrumb model={breadCrumbItems} home="/" />
+          <BreadCrumb model={breadCrumbItems} />
           {
             showOverview && (
               <div style={{ marginLeft: '50px', marginTop: '25px'}} className="content-section implementation">

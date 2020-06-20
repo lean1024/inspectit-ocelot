@@ -23,6 +23,11 @@ class EditorView extends React.Component {
     displayScopeEditor: 'none',
   }
 
+  componentDidMount(){
+    document.addEventListener('keydown', (e) => { if(e.key==='O') this.forceUpdate()})
+    
+  }
+
   handleDisplayOfView = (viewType) => {
     switch (viewType) {
       case 'showScopeView': 
@@ -133,12 +138,11 @@ class EditorView extends React.Component {
           </div>
         }
         {
-          showEditor &&
+          showEditor && 
           <div style={{display: displayScopeEditor}}>
             <div className="p-col visual-editor-container">
                 <VisualEditor yamlConfig={value} onUpdate={onChange}>
                     {(onUpdate, config) => (
-                        // 'OR Statement here?'
                         <ScopeEditor config={config} schema={schema} loading={loading} readOnly={readOnly} onUpdate={onUpdate} />
                     )}
                 </VisualEditor>

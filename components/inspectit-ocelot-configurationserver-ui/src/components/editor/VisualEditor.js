@@ -17,7 +17,7 @@ class VisualEditor extends React.Component {
   componentWillMount() {
     this.parseAndUpdateState();  
   }
-  
+
   componentWillUpdate(prevProps) {
     if (prevProps.yamlConfig !== this.props.yamlConfig) {
       this.parseAndUpdateState();
@@ -81,6 +81,7 @@ class VisualEditor extends React.Component {
 
   render() {
     const { config, isError, showWarn } = this.state;
+    console.log('visualEditor', config)
 
     return (
       <div className="this">

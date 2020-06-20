@@ -93,7 +93,6 @@ class TreeTableEditor extends React.Component {
   }
 
   handleClick = () => {
-    alert('oh noe')
   }
   
 

@@ -6,6 +6,7 @@ import ClassMatcherName from './ClassMatcherName';
 import ClassMatcherInterface from './ClassMatcherInterface';
 import {Toolbar} from 'primereact/toolbar';
 import {Dialog} from 'primereact/dialog';
+// import { doc } from 'prettier';
 
 class ClassSelector extends React.Component {
 
@@ -21,7 +22,14 @@ class ClassSelector extends React.Component {
   }
   
   componentDidMount() {
- 
+    // #breadCrumb
+    // let arr = Array.from(htmlCollection);
+    // arr.map(element => {
+    //   if( element.innerText === 'Class Selector' ) {
+    //     alert('yes')
+    //     element.addEventListener('click', )
+    //   }
+    // })
   }
 
   confirm = () => {
@@ -30,28 +38,28 @@ class ClassSelector extends React.Component {
     changeConfigScope( scopeObject );
   }
 
-  createInterfaceEntry = () => {
-    let { classSelectorObject } = this.state;
-    let interfaces = classSelectorObject.interfaces;
-    interfaces.push 
-  }
+  // createInterfaceEntry = () => {
+  //   let { classSelectorObject } = this.state;
+  //   let interfaces = classSelectorObject.interfaces;
+  //   interfaces.push 
+  // }
 
-  createNewEntry = () => {
-    const interfaces = [{name: 'I_example1', matcherMode: "EQUALS_FULLY"}, {name: 'I_example2', matcherMode: "STARTS_WITH"} ];
-    let newEntry = {};
+  // createNewEntry = () => {
+  //   const interfaces = [{name: 'I_example1', matcherMode: "EQUALS_FULLY"}, {name: 'I_example2', matcherMode: "STARTS_WITH"} ];
+  //   let newEntry = {};
 
-    if (names) {
-      newEntry['type'] = ["interface_name" ]
+  //   if (names) {
+  //     newEntry['type'] = ["interface_name" ]
 
-    }
-    if(interfaces.length > 0 ) {
-      newEntry['interfaces'] = interfaces
-    }
-    newEntry['interfaces'] = interfaces;
-    newEntry['superclass'] = ["interface_name" ]
+  //   }
+  //   if(interfaces.length > 0 ) {
+  //     newEntry['interfaces'] = interfaces
+  //   }
+  //   newEntry['interfaces'] = interfaces;
+  //   newEntry['superclass'] = ["interface_name" ]
 
-    let { scopeObject } = this.props;
-  }
+  //   let { scopeObject } = this.props;
+  // }
 
   onClick(name, position) {
     let state = {

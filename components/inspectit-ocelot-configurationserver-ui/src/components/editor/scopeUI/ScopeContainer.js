@@ -30,8 +30,35 @@ const schemaType = {
 class ScopeContainer extends React.Component {
   state = { showScopeEditOverview: true, showClassSelector: false, showMethodSelector: false }
 
-  componentWillMount(){
-    console.log('xaxa', this.props)
+  componentWillUnmount () {
+  }
+
+  componentDidMount(){
+    this.addEventListenerToBreadCrumbs();
+  }
+
+  displayScope = () => this.setState({showScopeEditOverview: true, showClassSelector: false, showMethodSelector: false});
+
+  // scope name was clicked
+  handleBreadCrumbClick = () => {
+    const { updateBreadCrumbs, scopeObject } = this.props;
+    const { scopeName } = scopeObject;
+    const breadCrumbItems = [{'label': 'Scope Overview'}, {'label': scopeName }];
+
+    updateBreadCrumbs(breadCrumbItems)
+    this.displayScope();
+  }
+
+  
+  addEventListenerToBreadCrumbs = () => {
+    const { scopeName } = this.props.scopeObject;
+    // <BreadCrumb> does not enable onClick listener on the elements, we manually get the elements and at the wished functionality
+    let breadCrumbArray = Array.from(document.getElementsByClassName('p-breadcrumb p-component')[0].getElementsByClassName('p-menuitem-link'));
+    breadCrumbArray.map(element => {
+      if( element.innerText === scopeName ) {
+        element.addEventListener('click', this.handleBreadCrumbClick);
+      }
+    })
   }
 
   toggleShowClassSelector = () => {
@@ -42,10 +69,38 @@ class ScopeContainer extends React.Component {
     })
   }
 
+  displayTheGivenView = (view) => {
+    switch (view) {
+      case 'showScopeEditOverview': 
+        this.setState( {
+          showScopeEditOverview:  !this.state.showScopeView,
+          showBusinessTransactionView: false,
+          showTreeTableView: false,
+        });
+        break;
+      case 'showScopeView': 
+        this.state.displayScopeEditor === 'none' ? this.setState({ displayScopeEditor: 'flex'}) : this.setState({ displayScopeEditor: 'none'});
+        this.setState( {
+          showScopeView:  !this.state.showScopeView,
+          showBusinessTransactionView: false,
+          showTreeTableView: false,
+        });
+        break;
+      case 'showScopeView': 
+        this.state.displayScopeEditor === 'none' ? this.setState({ displayScopeEditor: 'flex'}) : this.setState({ displayScopeEditor: 'none'});
+        this.setState( {
+          showScopeView:  !this.state.showScopeView,
+          showBusinessTransactionView: false,
+          showTreeTableView: false,
+        });
+        break;
+    }
+  }
+
   render(){
     const { showScopeEditOverview, showClassSelector, showMethodSelector } = this.state;
     const { config, scopeObject, updateBreadCrumbs, updateScopeObject } = this.props;
-    console.log('UUU', scopeObject)
+
 
     return(
       <React.Fragment>
@@ -125,10 +180,10 @@ class Scope extends React.Component {
   }
 
   handleClassSelectorButton = () => {
-    const { toggleShowClassSelector, updateBreadCrumbs } = this.props;
-    let label = {'label': 'Class Selector'};
-    let removeLastCrumb = false;
-    updateBreadCrumbs(label, removeLastCrumb)
+    const { toggleShowClassSelector, updateBreadCrumbs, scopeObject } = this.props;
+    const { scopeName } = scopeObject;
+    const breadCrumbItems = [{'label': 'Scope Overview'}, {'label': scopeName }, {'label': 'Class Selector'}];
+    updateBreadCrumbs(breadCrumbItems)
     toggleShowClassSelector();
   }
   
