@@ -1,12 +1,12 @@
 import {InputText} from 'primereact/inputtext';
 import {Dropdown} from 'primereact/dropdown';
-
+import {Checkbox} from 'primereact/checkbox';
 import { Button } from 'primereact/button';
 import { connect } from 'react-redux';
 
 
 class SimpleOptionComponent extends React.Component {
-  state = { hoveredItem: undefined };
+  state = { hoveredItem: undefined , itemTemplate: undefined, cities: []};
 
   // the generic component needs to be specified. Setting up the text here.
   componentWillMount(){
@@ -58,6 +58,10 @@ class SimpleOptionComponent extends React.Component {
         this.setState({upperText: 'have the following arguments', optionTypeText: 'arguments'})
         break;
     }
+
+    // the generic component either displays simpleTemplate or visibilityTemplate or argumentsTemplate
+    if ( optionType === 'visibility' || optionType === 'arguments') this.setState({itemTemplate: optionType})
+    else this.setState({ itemTemplate: 'simpleTemplate'});
   }
   
   // the component needs highlighting for better UX.
@@ -187,7 +191,6 @@ class SimpleOptionComponent extends React.Component {
 
   // div, which contains an item for an optionType
   itemTemplate = (entry, index) => {
-    const { optionTypeText } = this.state;
     const background_bigDiv = "lightsteelblue";   
     // const background_bigDiv = "#bccace";
     const background_uberSchriftDiv = "#fa9581";
@@ -196,7 +199,9 @@ class SimpleOptionComponent extends React.Component {
     const color_uberSchriftText = "whitesmoke";
     const color_elementSchrift = "whitesmoke";
 
-    // data
+    const { optionTypeText } = this.state;
+
+    // dropdown data
     const dropdownOptions = [
       {label: 'EQUALS_FULLY', value: 'EQUALS_FULLY'},
       {label: 'STARTS_WITH', value: 'STARTS_WITH'},
@@ -218,8 +223,91 @@ class SimpleOptionComponent extends React.Component {
     )
   }
 
-  render(){
+  checkBoxTemplate = () => {
     const { upperText, selectorTypeText } = this.state;
+    const { scopeObject, optionType } = this.props;
+
+    return (
+      <div style={{display: 'inline-flex'}}>
+        <div className="p-col-6">
+          <Checkbox inputId="cb1" value="PUBLIC" onChange={this.onCityChange} checked={this.state.cities.includes('PUBLIC')}></Checkbox>
+          <label htmlFor="cb1" className="p-checkbox-label">PUBLIC</label>
+        </div>
+        <div className="p-col-6">
+          <Checkbox inputId="cb2" value="PROTECTED" onChange={this.onCityChange} checked={this.state.cities.includes('PROTECTED')}></Checkbox>
+          <label htmlFor="cb2" className="p-checkbox-label">PROTECTED</label>
+        </div>
+        <div className="p-col-6">
+          <Checkbox inputId="cb3" value="PACKAGE" onChange={this.onCityChange} checked={this.state.cities.includes('PACKAGE')}></Checkbox>
+          <label htmlFor="cb3" className="p-checkbox-label">PACKAGE</label>
+        </div>
+        <div className="p-col-6">
+          <Checkbox inputId="cb3" value="PRIVATE" onChange={this.onCityChange} checked={this.state.cities.includes('PRIVATE')}></Checkbox>
+          <label htmlFor="cb3" className="p-checkbox-label">PRIVATE</label>
+        </div>
+      </div>
+    )
+  }
+
+  onCityChange = (e) => {
+    let selectedCities = [...this.state.cities];
+    if(e.checked)
+      selectedCities.push(e.value);
+    else
+      selectedCities.splice(selectedCities.indexOf(e.value), 1);
+    this.setState({cities: selectedCities});
+  }
+
+  simpleOptionTemplate = () => {
+    const background_bigDiv = "lightsteelblue";   
+    // const background_bigDiv = "#bccace";
+    const background_uberSchriftDiv = "#fa9581";
+    const background_middleDiv = "#8bacbd"; 
+    const background_extraField = "whitesmoke";
+    const color_uberSchriftText = "whitesmoke";
+    const color_elementSchrift = "whitesmoke";
+
+    const { upperText, selectorTypeText } = this.state;
+    const { scopeObject, optionType } = this.props;
+    let editingScope = false;
+    const divStyle = { padding: '5px 10px 0 10px' ,height:'30px',  background: background_uberSchriftDiv, width: 'fit-content', outline:'', marginBottom: '15px', borderRadius: '10px' };
+    const pStyle = { color: color_uberSchriftText , fontWeight: 'bold', marginTop: '0px' };
+
+    return (
+      <React.Fragment>
+        <div id='nameDiv' style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '4px solid floralwhite'}}>
+          { !editingScope && (
+            <div style={{...divStyle}}>
+              <p style={{ ...pStyle}}>I want to target the {selectorTypeText} that {upperText} </p>
+            </div>  
+          )}
+          { editingScope && scopeObject && scopeObject[optionType] && (
+            <div style={{...divStyle}}>
+              <p style={{ ...pStyle}}>The classes must {upperText} </p>
+            </div>
+          )}
+          <div style={{display: 'inline-grid'}}>
+            {/* the component needs to differentiate between being an array optionType component or just 1 element component*/}
+            { scopeObject[optionType] && Array.isArray(scopeObject[optionType]) && scopeObject[optionType].map((entry,index) => 
+              this.itemTemplate(entry,index)
+            )}
+            { scopeObject[optionType] && !Array.isArray(scopeObject[optionType]) && this.itemTemplate(scopeObject[optionType])}
+          </div>
+        </div>
+        
+        <div style={{ position: 'relative', height: '20px' , display: 'flex', marginBottom: '5px',}}>
+          <p style={{ visibility: 'hidden' , color:'red', position:'absolute', right:'35px', marginTop:'-3px'}}> remove this option </p>
+          <i onClick={this.removeOption} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} style={{ position: 'absolute', right: '5px', bottom:'-5px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"></i>
+        </div>
+      </React.Fragment>
+    )
+  }
+
+  render(){
+    console.log('yeha');
+    console.log(scopeObject);
+
+    const { upperText, selectorTypeText, itemTemplate } = this.state;
     const { scopeObject, optionType } = this.props;
     
     const background_bigDiv = "lightsteelblue";   
@@ -239,32 +327,14 @@ class SimpleOptionComponent extends React.Component {
 // {scopeObject && scopeObject.names && (  important
     return(
       <React.Fragment> 
-        {scopeObject[optionType] && (
-          <React.Fragment>
-            <div id='nameDiv' style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '4px solid floralwhite'}}>
-              { !editingScope && (
-                <div style={{...divStyle}}>
-                  <p style={{ ...pStyle}}>I want to target the {selectorTypeText} that {upperText} </p>
-                </div>  
-              )}
-              { editingScope && scopeObject && scopeObject[optionType] && (
-                <div style={{...divStyle}}>
-                  <p style={{ ...pStyle}}>The classes must {upperText} </p>
-                </div>
-              )}
-              <div style={{display: 'inline-grid'}}>
-                {/* the component needs to differentiate between being an array optionType component or just 1 element component*/}
-                { scopeObject[optionType] && Array.isArray(scopeObject[optionType]) && scopeObject[optionType].map((entry,index) => 
-                  this.itemTemplate(entry,index)
-                )}
-                { scopeObject[optionType] && !Array.isArray(scopeObject[optionType]) && this.itemTemplate(scopeObject[optionType])}
-              </div>
-            </div>
-            <div style={{ position: 'relative', height: '20px' , display: 'flex', marginBottom: '5px',}}>
-              <p style={{ visibility: 'hidden' , color:'red', position:'absolute', right:'35px', marginTop:'-3px'}}> remove this option </p>
-              <i onClick={this.removeOption} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} style={{ position: 'absolute', right: '5px', bottom:'-5px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"></i>
-            </div>
-          </React.Fragment>
+        {scopeObject[optionType] && itemTemplate === 'simpleTemplate' && (
+          this.simpleOptionTemplate()
+        )}
+        {scopeObject[optionType] && itemTemplate === 'visibility' && (
+          this.checkBoxTemplate()
+        )}
+        {scopeObject[optionType] && itemTemplate === 'arguments' && (
+          this.checkBoxTemplate()
         )}
       </React.Fragment>
     )
