@@ -2,13 +2,13 @@ import { Button } from 'primereact/button';
 import { configurationActions } from '../../../../redux/ducks/configuration';
 import { connect } from 'react-redux';
 import ClassMatcherCreateComponent from './ClassMatcherCreateComponent';
-import ClassMatcherName from './ClassMatcherName';
+import SimpleOptionComponent from './SimpleOptionComponent';
 import ClassMatcherInterface from './ClassMatcherInterface';
 import {Toolbar} from 'primereact/toolbar';
 import {Dialog} from 'primereact/dialog';
 // import { doc } from 'prettier';
 
-class ClassSelector extends React.Component {
+class GenericSelectorComponent  extends React.Component {
 
   state = {
     displayModal: false,
@@ -43,7 +43,7 @@ class ClassSelector extends React.Component {
   }
 
   render(){
-    const { scopeObject, updateScopeObject } = this.props;
+    const { scopeObject, updateScopeObject, selectorType } = this.props;
 
     return(
       <div className="this">
@@ -63,16 +63,16 @@ class ClassSelector extends React.Component {
         <Toolbar>
         <div className="p-toolbar">
             <Button label="New option" icon="pi pi-plus" style={{marginRight:'.25em'}}  onClick={() => this.onClick('displayModal')} />
-            <Button label="Cancel scope" icon="pi pi-times" style={{marginRight:'.25em'}} className="p-button-danger" />
-            <Button label="Save scope" icon="pi pi-check" className="p-button-success" />
+            <Button label="Cancel" icon="pi pi-times" style={{marginRight:'.25em'}} className="p-button-danger" />
+            <Button label="Save" icon="pi pi-check" className="p-button-success" />
         </div>
         </Toolbar>
-        <ClassMatcherName scopeObject={scopeObject} updateScopeObject={updateScopeObject}  option={'type'} />
-        <ClassMatcherName scopeObject={scopeObject} updateScopeObject={updateScopeObject}  option={'interfaces'} />
-        {/* <ClassMatcherName scopeObject={scopeObject} updateScopeObject={updateScopeObject}  option={'annotation'} /> */}
-        <ClassMatcherName scopeObject={scopeObject} updateScopeObject={updateScopeObject}  option={'superclass'}/>
+        <SimpleOptionComponent selectorType={selectorType} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'type'} />
+        <SimpleOptionComponent selectorType={selectorType} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'interfaces'} />
+        {/* <SimpleOptionComponent selectorType={selectorType} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'annotation'} /> */}
+        <SimpleOptionComponent selectorType={selectorType} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'superclass'}/>
         <Dialog header="choose by which option you want to determine your classes" visible={this.state.displayModal} style={{width: '50vw'}} onHide={() => this.onHide('displayModal')} modal={false}>
-          <ClassMatcherCreateComponent scopeObject={scopeObject} updateScopeObject={updateScopeObject} onHide={this.onHide}/>
+          <ClassMatcherCreateComponent selectorType={selectorType} scopeObject={scopeObject} updateScopeObject={updateScopeObject} onHide={this.onHide}/>
         </Dialog>
       </div>
     )
@@ -80,4 +80,4 @@ class ClassSelector extends React.Component {
 }
 
 
-export default ClassSelector;
+export default GenericSelectorComponent ;

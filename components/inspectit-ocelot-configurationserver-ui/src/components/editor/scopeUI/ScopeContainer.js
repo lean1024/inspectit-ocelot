@@ -13,7 +13,7 @@ import { TreeTable } from 'primereact/treetable';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import ClassSelector from './classMatcher/ClassSelector'
+import GenericSelectorComponent  from './classMatcher/GenericSelectorComponent '
 
 
 // helper for a schema property type constants
@@ -28,7 +28,7 @@ const schemaType = {
 };
 
 class ScopeContainer extends React.Component {
-  state = { showScopeEditOverview: true, showClassSelector: false, showMethodSelector: false }
+  state = { showScopeEditOverview: true, showGenericSelectorComponent: false, showMethodSelector: false }
 
   componentWillUnmount () {
   }
@@ -37,7 +37,7 @@ class ScopeContainer extends React.Component {
     this.addEventListenerToBreadCrumbs();
   }
 
-  displayScope = () => this.setState({showScopeEditOverview: true, showClassSelector: false, showMethodSelector: false});
+  displayScope = () => this.setState({showScopeEditOverview: true, showGenericSelectorComponent: false, showMethodSelector: false});
 
   // scope name was clicked
   handleBreadCrumbClick = () => {
@@ -61,13 +61,14 @@ class ScopeContainer extends React.Component {
     })
   }
 
-  toggleShowClassSelector = () => {
+  showGenericSelectorComponent = () => {
     this.setState({ 
       showScopeEditOverview: false,
-      showClassSelector: true,
-      showMethodSelector: false
+      showGenericSelectorComponent: true,
     })
   }
+
+  setSelectorType = selectorType => this.setState({ selectorType})
 
   displayTheGivenView = (view) => {
     switch (view) {
@@ -98,24 +99,19 @@ class ScopeContainer extends React.Component {
   }
 
   render(){
-    const { showScopeEditOverview, showClassSelector, showMethodSelector } = this.state;
+    const { showScopeEditOverview, showGenericSelectorComponent, selectorType } = this.state;
     const { config, scopeObject, updateBreadCrumbs, updateScopeObject } = this.props;
 
 
     return(
       <React.Fragment>
         { showScopeEditOverview && (
-          <Scope toggleShowClassSelector={this.toggleShowClassSelector} updateBreadCrumbs={updateBreadCrumbs} scopeObject={scopeObject} />
+          <Scope showGenericSelectorComponent={this.showGenericSelectorComponent} setSelectorType={this.setSelectorType} updateBreadCrumbs={updateBreadCrumbs} scopeObject={scopeObject} />
         )}
 
-        { showClassSelector && (
-          <ClassSelector scopeObject={scopeObject} updateScopeObject={updateScopeObject} />
+        { showGenericSelectorComponent && (
+          <GenericSelectorComponent scopeObject={scopeObject} updateScopeObject={updateScopeObject} selectorType={selectorType} />
         )}
-
-        { showMethodSelector && (
-          <Scope/>
-        )}
-
 
       </React.Fragment>
     )
@@ -180,17 +176,27 @@ class Scope extends React.Component {
   }
 
   handleClassSelectorButton = () => {
-    const { toggleShowClassSelector, updateBreadCrumbs, scopeObject } = this.props;
+    const { showGenericSelectorComponent, setSelectorType, updateBreadCrumbs, scopeObject } = this.props;
     const { scopeName } = scopeObject;
     const breadCrumbItems = [{'label': 'Scope Overview'}, {'label': scopeName }, {'label': 'Class Selector'}];
     updateBreadCrumbs(breadCrumbItems)
-    toggleShowClassSelector();
+    showGenericSelectorComponent();
+    setSelectorType('Class');
+  }
+
+  handleMethodSelectorButton = () => {
+    const { showGenericSelectorComponent, setSelectorType, updateBreadCrumbs, scopeObject } = this.props;
+    const { scopeName } = scopeObject;
+    const breadCrumbItems = [{'label': 'Scope Overview'}, {'label': scopeName }, {'label': 'Method Selector'}];
+    updateBreadCrumbs(breadCrumbItems)
+    showGenericSelectorComponent();
+    setSelectorType('Method');
   }
   
 
   render() {
     const { icon_scopeName, icon_classSelector, icon_methodSelector } = this.state;
-    const { toggleShowClassSelector, scopeObject } = this.props;
+    const { showGenericSelectorComponent, scopeObject } = this.props;
 
   const options = [
     {name: 'name', visibility: 'visibility', interface: 'interface', object:'object', annotation: 'annotation', },
@@ -289,25 +295,23 @@ class Scope extends React.Component {
             </div>
 
             <div style={{background:'#EEEEEE', borderBottom: '1.5px solid white', padding: '25px'}}>
-              <h3 style={{marginTop: '0px', marginBottom: '0px'}}>method selectors</h3>
-              <div style={{display: 'flex'}}>
-              <p>
-                hand-pick a method or group of methods by using a selector. Use the options to specify the selector. Each list-item wields a specific selector.
-                {/* target a group of methods 
-                target one method 
-                target a set of methods 
-                target specifig methods
-                create a selector on a single method or a set of methods. 
-                
-                Each selector determines a set of method. The found methods of the selectors will be combined. */}
-                </p>
-              { !icon_methodSelector && (
-                <i style={{border: '2px solid black', borderRadius:'15px', opacity: '0.1', marginLeft: '15px', position: 'relative', top: '15px' , display: 'table' }}className="pi pi-check"></i>
+              <h3 style={{marginTop: '0px', marginBottom: '15px'}}>method selectors</h3>
+
+              <div style={{display:'flex', alignItems:'center', marginBottom: '15px'}}>
+                  <div  style={{maxWidth:'300px'}}>
+                  <span style={{display: 'inline-block'}}> 
+                    hand-pick a method or group of methods by using a selector. Use the options to specify the selector. Each list-item wields a specific selector.
+                  </span>
+                </div>
+              <Button onClick={this.handleMethodSelectorButton} style={{display: 'inline-block', marginLeft:'50px', padding:'10px'}}label="create method selector" />
+              { !icon_classSelector && (
+                <i style={{border: '2px solid black', borderRadius:'15px', opacity: '0.1', marginLeft: '15px' }}className="pi pi-check"></i>
               )}
-              { icon_methodSelector && (
-                <i style={{border: '2px solid green', borderRadius:'15px' , display: 'table',  marginLeft: '15px', position: 'relative', top: '15px'}}className="pi pi-check"></i>
+              { icon_classSelector && (
+                <i style={{border: '2px solid green', borderRadius:'15px' }}className="pi pi-check"></i>
               )}
               </div>
+
               <div>
 
 
@@ -336,6 +340,7 @@ class Scope extends React.Component {
 }
 
 ScopeContainer.propTypes = {
+  selectorType: undefined,
   /** The configuration object */
   config: PropTypes.object,
   /** The config file schema */

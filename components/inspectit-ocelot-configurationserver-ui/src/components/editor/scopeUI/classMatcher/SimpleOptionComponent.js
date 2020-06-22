@@ -1,36 +1,67 @@
 import {InputText} from 'primereact/inputtext';
 import {Dropdown} from 'primereact/dropdown';
+
 import { Button } from 'primereact/button';
 import { connect } from 'react-redux';
 
 
-class ClassMatcherName extends React.Component {
+class SimpleOptionComponent extends React.Component {
   state = { hoveredItem: undefined };
 
+  // the generic component needs to be specified. Setting up the text here.
   componentWillMount(){
-    const { option } = this.props;
+    const { optionType, selectorType } = this.props;
 
-    // option will either be type, superclass, annotations, interfaces
-    // since this component will be used for every option the written text should be adjusted
-    switch(option) {
+    switch(selectorType) {
+      case 'Class':
+        this.setState({selectorTypeText: 'classes'})
+        break;
+      case 'Method':
+        this.setState({selectorTypeText: 'methods'})
+    }
+
+    // optionType will either be type, superclass, annotations, interfaces
+    // since this component will be used for every optionType the written text should be adjusted
+
+
+
+    // info# why do i introduce optionTypeText? This component should display the "optionType". The optionType for class name is
+    // type. This cant be a text, so the component needs to re-write the text to "class name".
+    switch(optionType) {
+    // class option types
       case 'type':
-        this.setState({upperText: 'have a specific class name', type: 'class name'
-        })
+        this.setState({upperText: `have a specific class name`, optionTypeText: 'class name'});
         break;
       case 'interfaces':
-        this.setState({upperText: 'implement an interface', type: 'interface'}) 
+        this.setState({upperText: 'implement an interface', optionTypeText: 'interface'}) 
         break;
+    // TODO: case annotation ? oder annotations plural
       case 'annotation':
-        this.setState({upperText: 'have an annotation', type: 'annotation'})
+        this.setState({upperText: 'have an annotation', optionTypeText: 'annotation'})
         break;
       case 'superclass':
-        this.setState({upperText: 'inherit from a superclass', type: 'superclass'})
+        this.setState({upperText: 'inherit from a superclass', optionTypeText: 'superclass'})
+        break;
+
+    // method option types
+      case 'name':
+        this.setState({upperText: `have a specific method name`, optionTypeText: 'method name'})
+        break;
+      case 'visibility':
+        this.setState({upperText: 'have any of the visibilities', optionTypeText: 'visibility'}) 
+        break;
+      // TODO: case annotation ? oder annotations plural
+      case 'annotation':
+        this.setState({upperText: 'have an annotation', optionTypeText: 'annotation'})
+        break;
+      case 'arguments':
+        this.setState({upperText: 'have the following arguments', optionTypeText: 'arguments'})
         break;
     }
   }
-    
+  
+  // the component needs highlighting for better UX.
   // the "add" and "remove" icons indicate which div they will remove with a red outline 
-  // adding highlighting functionallity
   handleMouseOver = (e) => {
     let tooltip = e.target.previousSibling;
     let optionDiv = document.getElementById('nameDiv');
@@ -73,51 +104,68 @@ class ClassMatcherName extends React.Component {
     e.target.nextSibling && (e.target.nextSibling.style.visibility = 'hidden');
   }
 
-  // 1 function to handle multiple inputs and dropdowns
+  // the component needs a function to handle the onChange on inputs and dropdowns
+  // creating 1 function to handle multiple inputs and dropdowns, by making use of data-attributes on the inputs and dropdowns to differentiate
+  // using the selectorType to change the scopeObject either at class keys or at method keys
   handleChange = e => { 
-    let { scopeObject, updateScopeObject, option } = this.props;
-    // type is either type, interfaces, annotations, superclass 
-    // isArray is important to differentiate between an array key
-    // index is for the position in the array, it it's an array
-    let type = e.target.name;
-    let index = e.target.id;
-    let isArray = undefined;
-    if (option === 'interfaces' || option === 'annotations') isArray=true;
-
-    // the scopeObject is at the target key an array (e.x interfaces) and must be handled like one
-    if(isArray) scopeObject[option][index][type] = e.target.value;
-    // the scopeObject is at the target key not an array (type, superclass)
-    if(!isArray) scopeObject[option][type] = e.target.value;
-
-    let scopeName = scopeObject.scopeName; // not needed? dunno
-    updateScopeObject(scopeName, scopeObject)
+    let { scopeObject, updateScopeObject, optionType, selectorType } = this.props;
+    if ( selectorType === 'Class') {
+      // optionType is either type, interfaces, annotations, superclass 
+      // isArray is important to differentiate between an array key
+      // index is for the position in the array, it it's an array
+      let type = e.target.name;
+      let index = e.target.id;
+      let isArray = undefined;
+      if (optionType === 'interfaces' || optionType === 'annotations') isArray=true;
+  
+      // the scopeObject is at the target key an array (e.x interfaces) and must be handled like one
+      if(isArray) scopeObject[optionType][index][type] = e.target.value;
+      // the scopeObject is at the target key not an array (type, superclass)
+      if(!isArray) scopeObject[optionType][type] = e.target.value;
+  
+      let scopeName = scopeObject.scopeName; // not needed? dunno
+      updateScopeObject(scopeName, scopeObject)
+    } else if ( selectorType === 'Method') {
+      let type = e.target.name;
+      let index = e.target.id;
+      let isArray = undefined;
+      if (optionType === 'interfaces' || optionType === 'annotations') isArray=true;
+  
+      // the scopeObject is at the target key an array (e.x interfaces) and must be handled like one
+      if(isArray) scopeObject[optionType][index][type] = e.target.value;
+      // the scopeObject is at the target key not an array (type, superclass)
+      if(!isArray) scopeObject[optionType][type] = e.target.value;
+  
+      let scopeName = scopeObject.scopeName; // not needed? dunno
+      updateScopeObject(scopeName, scopeObject)
+    }
   }
 
   // the item can be inside an array (interfaces)
   // the item can be not inside an array (type, superclass)
-  // index is not undefined if the option is an array
+  // index is not undefined if the optionType is an array
   deleteItem = (e) => {
-    let { scopeObject, updateScopeObject, option } = this.props;
+    let { scopeObject, updateScopeObject, optionType } = this.props;
     let index = e.target.id;
     let isArray = undefined;
     if (index) { isArray=true};
 
     // removing the element out of the scopeObject
     if ( isArray) {
-      let targetArray = scopeObject[option];
+      let targetArray = scopeObject[optionType];
       targetArray.splice(index,1);
 
-      // when the array gets empty, we remove the whole option out of the scopeObject
+      // when the array gets empty, we remove the whole optionType out of the scopeObject
       if (targetArray.length < 1 ) {
-        delete scopeObject[option];
+        delete scopeObject[optionType];
       } else {
         // updating the targetarray in the scopeObject;
-        scopeObject[option] = targetArray;
+        scopeObject[optionType] = targetArray;
       }
     }
 
     if ( !isArray ) {
-      delete scopeObject[option];
+      delete scopeObject[optionType];
     }
 
 
@@ -126,20 +174,20 @@ class ClassMatcherName extends React.Component {
     updateScopeObject(scopeName, scopeObject)
   }
 
-  // removing an option means to delete the corresponding key in scopeObject(type, interface, superclass )
-  // TODO: anootation can be passed as option, but is only a nested key of type and interfaces
+  // removing an optionType means to delete the corresponding key in scopeObject(type, interface, superclass )
+  // TODO: anootation can be passed as optionType, but is only a nested key of type and interfaces
   removeOption = () => {
-    let { scopeObject, updateScopeObject, option } = this.props;
-    delete scopeObject[option];
+    let { scopeObject, updateScopeObject, optionType } = this.props;
+    delete scopeObject[optionType];
 
     // updating the scopeObject
     let scopeName = scopeObject.scopeName;
     updateScopeObject(scopeName, scopeObject)
   }
 
-  // div, which contains an item for an option
+  // div, which contains an item for an optionType
   itemTemplate = (entry, index) => {
-    const { type } = this.state;
+    const { optionTypeText } = this.state;
     const background_bigDiv = "lightsteelblue";   
     // const background_bigDiv = "#bccace";
     const background_uberSchriftDiv = "#fa9581";
@@ -159,8 +207,9 @@ class ClassMatcherName extends React.Component {
       {label: 'ENDS_WITH_IGNORE_CASE', value: 'ENDS_WITH_IGNORE_CASE'},
     ];
     return (
+      // The components optionType div
       <div style={{display: 'inline-flex',  marginBottom: '5px', position:'relative', background: background_middleDiv, padding: '10px 30px 0px 10px', borderRadius:'10px'}}>
-        <p style={{ color: color_elementSchrift}}> The {type} </p>
+        <p style={{ color: color_elementSchrift}}> The {optionTypeText} </p>
         <Dropdown name='matcher-mode' id={index} style={{marginLeft:'10px', fontSize: '13px',  position: 'relative', height:'35px', bottom: '-5px'}} value={entry['matcher-mode']} options={dropdownOptions} onChange={this.handleChange} placeholder="EQUALS_FULLY"/>
         <p style={{  color: color_elementSchrift ,  marginLeft: '10px' }}>the term</p>
         <InputText name='name' id={index} style={{ textAlign: 'middle', marginLeft: '10px' , position: 'relative',  height:'35px', bottom: '-5px'}} value={entry.name} onChange={this.handleChange} />
@@ -170,8 +219,8 @@ class ClassMatcherName extends React.Component {
   }
 
   render(){
-    const { upperText, type } = this.state;
-    const { scopeObject, option } = this.props;
+    const { upperText, selectorTypeText } = this.state;
+    const { scopeObject, optionType } = this.props;
     
     const background_bigDiv = "lightsteelblue";   
     // const background_bigDiv = "#bccace";
@@ -190,25 +239,25 @@ class ClassMatcherName extends React.Component {
 // {scopeObject && scopeObject.names && (  important
     return(
       <React.Fragment> 
-        {scopeObject[option] && (
+        {scopeObject[optionType] && (
           <React.Fragment>
             <div id='nameDiv' style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '4px solid floralwhite'}}>
               { !editingScope && (
                 <div style={{...divStyle}}>
-                  <p style={{ ...pStyle}}>I want to target the classes that {upperText} </p>
+                  <p style={{ ...pStyle}}>I want to target the {selectorTypeText} that {upperText} </p>
                 </div>  
               )}
-              { editingScope && scopeObject && scopeObject[option] && (
+              { editingScope && scopeObject && scopeObject[optionType] && (
                 <div style={{...divStyle}}>
                   <p style={{ ...pStyle}}>The classes must {upperText} </p>
                 </div>
               )}
               <div style={{display: 'inline-grid'}}>
-                {/* itemTemplate */}
-                { scopeObject[option] && Array.isArray(scopeObject[option]) && scopeObject[option].map((entry,index) => 
+                {/* the component needs to differentiate between being an array optionType component or just 1 element component*/}
+                { scopeObject[optionType] && Array.isArray(scopeObject[optionType]) && scopeObject[optionType].map((entry,index) => 
                   this.itemTemplate(entry,index)
                 )}
-                { scopeObject[option] && !Array.isArray(scopeObject[option]) && this.itemTemplate(scopeObject[option])}
+                { scopeObject[optionType] && !Array.isArray(scopeObject[optionType]) && this.itemTemplate(scopeObject[optionType])}
               </div>
             </div>
             <div style={{ position: 'relative', height: '20px' , display: 'flex', marginBottom: '5px',}}>
@@ -222,4 +271,4 @@ class ClassMatcherName extends React.Component {
   }
 }
 
-export default ClassMatcherName;
+export default SimpleOptionComponent;
