@@ -2,7 +2,7 @@ import { Button } from 'primereact/button';
 import { configurationActions } from '../../../../redux/ducks/configuration';
 import { connect } from 'react-redux';
 
-class ClassMatcherCreateComponent extends React.Component {
+class MethodSelectorCreateOption extends React.Component {
     
 
     createOption = (e) => {
@@ -76,4 +76,4 @@ class ClassMatcherCreateComponent extends React.Component {
 }
 
 
-export default ClassMatcherCreateComponent;
+export default MethodSelectorCreateOption;

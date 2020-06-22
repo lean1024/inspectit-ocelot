@@ -46,6 +46,7 @@ class ClassSelector extends React.Component {
     const { scopeObject, updateScopeObject } = this.props;
 
     return(
+
       <div className="this">
         <style jsx>
           {`
@@ -61,11 +62,11 @@ class ClassSelector extends React.Component {
           `}
         </style>
         <Toolbar>
-        <div className="p-toolbar">
+          <div className="p-toolbar">
             <Button label="New option" icon="pi pi-plus" style={{marginRight:'.25em'}}  onClick={() => this.onClick('displayModal')} />
             <Button label="Cancel scope" icon="pi pi-times" style={{marginRight:'.25em'}} className="p-button-danger" />
             <Button label="Save scope" icon="pi pi-check" className="p-button-success" />
-        </div>
+          </div>
         </Toolbar>
         <ClassMatcherName scopeObject={scopeObject} updateScopeObject={updateScopeObject}  option={'type'} />
         <ClassMatcherName scopeObject={scopeObject} updateScopeObject={updateScopeObject}  option={'interfaces'} />
@@ -80,4 +81,4 @@ class ClassSelector extends React.Component {
 }
 
 
-export default ClassSelector;
+export default Selector;

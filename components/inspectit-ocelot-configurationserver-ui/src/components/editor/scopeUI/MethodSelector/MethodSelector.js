@@ -1,14 +1,14 @@
 import { Button } from 'primereact/button';
 import { configurationActions } from '../../../../redux/ducks/configuration';
 import { connect } from 'react-redux';
-import ClassMatcherCreateComponent from './ClassMatcherCreateComponent';
+import MethodSelectorCreateOption from './MethodSelectorCreateOption';
 import ClassMatcherName from './ClassMatcherName';
 import ClassMatcherInterface from './ClassMatcherInterface';
 import {Toolbar} from 'primereact/toolbar';
 import {Dialog} from 'primereact/dialog';
 // import { doc } from 'prettier';
 
-class ClassSelector extends React.Component {
+class MethodSelector extends React.Component {
 
   state = {
     displayModal: false,
@@ -72,7 +72,7 @@ class ClassSelector extends React.Component {
         {/* <ClassMatcherName scopeObject={scopeObject} updateScopeObject={updateScopeObject}  option={'annotation'} /> */}
         <ClassMatcherName scopeObject={scopeObject} updateScopeObject={updateScopeObject}  option={'superclass'}/>
         <Dialog header="choose by which option you want to determine your classes" visible={this.state.displayModal} style={{width: '50vw'}} onHide={() => this.onHide('displayModal')} modal={false}>
-          <ClassMatcherCreateComponent scopeObject={scopeObject} updateScopeObject={updateScopeObject} onHide={this.onHide}/>
+          <MethodSelectorCreateOption scopeObject={scopeObject} updateScopeObject={updateScopeObject} onHide={this.onHide}/>
         </Dialog>
       </div>
     )
@@ -80,4 +80,4 @@ class ClassSelector extends React.Component {
 }
 
 
-export default ClassSelector;
+export default MethodSelector;

@@ -5,10 +5,6 @@ import { connect } from 'react-redux';
 
 
 class ClassMatcherName extends React.Component {
-    // state 
-    // scopeObject                { names: {}, interfaces:{}, annotations:{}, superclasses:{} }
-    // checkIfFirstElement      "I want to target [0],  Additionally those must have [!0]"
-
   state = { hoveredItem: undefined };
 
   componentWillMount(){
@@ -34,6 +30,7 @@ class ClassMatcherName extends React.Component {
   }
     
   // the "add" and "remove" icons indicate which div they will remove with a red outline 
+  // adding highlighting functionallity
   handleMouseOver = (e) => {
     let tooltip = e.target.previousSibling;
     let optionDiv = document.getElementById('nameDiv');
@@ -58,7 +55,6 @@ class ClassMatcherName extends React.Component {
     hoveredItem.style.boxShadow = '0 0 0 1px lightsteelblue';
     this.setState({hoveredItem: undefined})
   }
-  // handleItemRemoveLeave =  (e) => e.target.parentElement.style.boxShadow = '0 0 0 3px red'
 
   handleAddItemOver = (e) => {
     e.target.nextSibling && (e.target.nextSibling.style.visibility = 'visible');
@@ -80,21 +76,24 @@ class ClassMatcherName extends React.Component {
   // 1 function to handle multiple inputs and dropdowns
   handleChange = e => { 
     let { scopeObject, updateScopeObject, option } = this.props;
+    // type is either type, interfaces, annotations, superclass 
+    // isArray is important to differentiate between an array key
+    // index is for the position in the array, it it's an array
     let type = e.target.name;
     let index = e.target.id;
     let isArray = undefined;
     if (option === 'interfaces' || option === 'annotations') isArray=true;
 
-    // the scopeObject is at the target key an array (interfaces) and must be handled like one
+    // the scopeObject is at the target key an array (e.x interfaces) and must be handled like one
     if(isArray) scopeObject[option][index][type] = e.target.value;
     // the scopeObject is at the target key not an array (type, superclass)
     if(!isArray) scopeObject[option][type] = e.target.value;
 
-    let scopeName = scopeObject.scopeName;
+    let scopeName = scopeObject.scopeName; // not needed? dunno
     updateScopeObject(scopeName, scopeObject)
   }
 
-  // the item can be inside a array (interfaces)
+  // the item can be inside an array (interfaces)
   // the item can be not inside an array (type, superclass)
   // index is not undefined if the option is an array
   deleteItem = (e) => {
@@ -171,11 +170,8 @@ class ClassMatcherName extends React.Component {
   }
 
   render(){
-    // const { scopeObject } = this.state;
     const { upperText, type } = this.state;
     const { scopeObject, option } = this.props;
-
-
     
     const background_bigDiv = "lightsteelblue";   
     // const background_bigDiv = "#bccace";
@@ -188,55 +184,32 @@ class ClassMatcherName extends React.Component {
     // xml parse, ( detects which option gets the "first" status, and the other will get the text "additionally")
     let checkIfFirstElement = 'names';
     let editingScope = false;
+
+    const divStyle = { padding: '5px 10px 0 10px' ,height:'30px',  background: background_uberSchriftDiv, width: 'fit-content', outline:'', marginBottom: '15px', borderRadius: '10px' };
+    const pStyle = { color: color_uberSchriftText , fontWeight: 'bold', marginTop: '0px' };
 // {scopeObject && scopeObject.names && (  important
     return(
       <React.Fragment> 
-      
-{scopeObject[option] && (
+        {scopeObject[option] && (
           <React.Fragment>
             <div id='nameDiv' style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '4px solid floralwhite'}}>
               { !editingScope && (
-                <div style={{padding: '5px 10px 0 10px' ,height:'30px',  background: background_uberSchriftDiv, width: 'fit-content', outline:'', marginBottom: '15px', borderRadius: '10px'}}>
-                  <p style={{ color: color_uberSchriftText , fontWeight: 'bold', marginTop: '0px',}}>I want to target the classes that {upperText} </p>
+                <div style={{...divStyle}}>
+                  <p style={{ ...pStyle}}>I want to target the classes that {upperText} </p>
                 </div>  
               )}
-              { !editingScope && checkIfFirstElement !== 'names'  && (
-                <div style={{padding: '5px 10px 0 10px' ,height:'30px',  background: background_uberSchriftDiv, width: 'fit-content', outline:'', marginBottom: '15px', borderRadius: '10px'}}>
-                  <p style={{ color: color_uberSchriftText , fontWeight: 'bold', marginTop: '0px',}}>Additionally those classes must have a specific class name</p>
-                </div>
-              )}
               { editingScope && scopeObject && scopeObject[option] && (
-                <div style={{padding: '5px 10px 0 10px' ,height:'30px',  background: background_uberSchriftDiv, width: 'fit-content', outline:'', marginBottom: '15px', borderRadius: '10px'}}>
-                  <p style={{ color: color_uberSchriftText , fontWeight: 'bold', marginTop: '0px',}}>The classes must {upperText} </p>
+                <div style={{...divStyle}}>
+                  <p style={{ ...pStyle}}>The classes must {upperText} </p>
                 </div>
               )}
               <div style={{display: 'inline-grid'}}>
-                {/* { scopeObject && scopeObject[option] && scopeObject[option].map((entry, index) =>               Für Interfaces, Annotations, immer eine Liste 
-                <React.Fragment>
-                  <div style={{display: 'inline-flex',  marginBottom: '15px', position:'relative', background: background_middleDiv, padding: '15px 30px 15px 15px', borderRadius:'10px'}}>
-                    <p style={{ color: color_elementSchrift}}> The class name</p>
-                    <Dropdown name='matcherMode' id={index} style={{marginLeft:'10px', position: 'relative', height:'35px', bottom: '-5px'}} value={entry.matcherMode} options={dropdownOptions} onChange={this.handleChange} placeholder="EQUALS_FULLY"/>
-                    <p style={{  color: color_elementSchrift ,  marginLeft: '10px' }}>the term</p>
-                    <InputText name='term' id={index} style={{ textAlign: 'middle', marginLeft: '10px' , position: 'relative',  height:'35px', bottom: '-5px'}} value={entry.term} onChange={this.handleChange} />
-                    <i onMouseOver={this.handleItemRemoveOver} onMouseLeave={this.handleItemRemoveLeave} onClick={this.handleClick} style={{ position: 'absolute', bottom:'0px', right: '0px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"></i>
-                  </div>
-                </React.Fragment>
-                )} */}
-                 { console.log(scopeObject)}
-                 { console.log(option)}
-                 { console.log(scopeObject[option])}
-                 { console.log( Array.isArray(scopeObject[option]))}
+                {/* itemTemplate */}
                 { scopeObject[option] && Array.isArray(scopeObject[option]) && scopeObject[option].map((entry,index) => 
                   this.itemTemplate(entry,index)
                 )}
-
                 { scopeObject[option] && !Array.isArray(scopeObject[option]) && this.itemTemplate(scopeObject[option])}
-
               </div>
-              {/* <div style={{ display:'flex', padding: '25px' , height:'80px', outline:'',  marginBottom: '5px',  width:'588px' , borderRadius:'10px', border: `2px solid ${background_middleDiv}`}}>
-                <i onMouseOver={this.handleAddItemOver} onMouseLeave={this.handleAddItemLeave} onClick={this.handleClick} style={{ position: '', bottom:'', left: '', fontSize:'30px',  color:'whitesmoke'}} className="pi pi-plus-circle"></i>
-                <p style={{visibility:'hidden', position:'relative', bottom:'15px', marginLeft:'25px', color:'ghostwhite', fontSize:'18px'}}> add additional constrain that the class name must match</p>
-              </div> */}
             </div>
             <div style={{ position: 'relative', height: '20px' , display: 'flex', marginBottom: '5px',}}>
               <p style={{ visibility: 'hidden' , color:'red', position:'absolute', right:'35px', marginTop:'-3px'}}> remove this option </p>
@@ -244,48 +217,9 @@ class ClassMatcherName extends React.Component {
             </div>
           </React.Fragment>
         )}
-      
-        {/* {scopeObject && scopeObject.names && checkIfFirstElement[0] !== 'name' && (
-          <React.Fragment>
-            <div  id='nameDiv'style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, width: '100%', borderRadius: '10px' , border: '4px solid floralwhite'}}>
-              <div style={{padding: '25px' , background: background_uberSchriftDiv, height:'85px', outline:'', marginBottom: '15px', borderRadius: '10px'}}>
-                <p style={{ color: color_uberSchriftText , fontWeight: 'bold', marginTop: '0px',}}>Additionally those classes must have a specific class name</p>
-              </div>
-              { Object.keys(scopeObject.names).map(entry =>
-              <React.Fragment>
-                <div style={{display: 'inline-flex',  marginBottom: '15px', position:'relative', background: background_middleDiv, padding: '15px 30px 15px 15px', borderRadius:'10px'}}>
-                  <p style={{ color: color_elementSchrift}}> The wanted name of the class </p>
-                  <Dropdown style={{marginLeft:'10px', position: 'relative', height:'35px', bottom: '-5px'}} value={scopeObject.names[entry].matcherMode} options={dropdownOptions} onChange={(e) => {this.setState({city: e.value})}} placeholder="EQUALS_FULLY"/>
-                  <p style={{  color: color_elementSchrift ,  marginLeft: '10px' }}>the term</p>
-                  <InputText style={{textAlign: 'middle', marginLeft: '10px' , position: 'relative',  height:'35px', bottom: '-5px'}} value={scopeObject.names[entry].term} onChange={(e) => this.setState({value: e.target.value})} />
-                  <i onClick={this.handleClick} style={{ position: 'absolute', bottom:'0px', right: '0px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"></i>
-                </div>
-              </React.Fragment>
-              )}
-            <div style={{padding: '25px' , height:'85px', outline:'',  marginBottom: '15px',  width:'712px' , borderRadius:'10px', border: `2px solid ${background_middleDiv}`}}>
-              <i onClick={this.handleClick} style={{ position: '', bottom:'', left: '', fontSize:'30px',  color:'whitesmoke'}} className="pi pi-plus-circle"></i>
-            </div>
-            </div>
-            <div style={{ position: 'relative', height: '20px' , display: 'flex', marginBottom: '25px',}}>
-              <i style={{ position: 'absolute', right: '5px', bottom:'-5px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"></i>
-            </div>
-          </React.Fragment>
-        )} */}
-       
-        </React.Fragment>
-      )
-    }
+      </React.Fragment>
+    )
+  }
 }
 
-function mapStateToProps(state) {
-  // const { scopeObject } = state.configuration;
-  // return {
-  //   scopeObject,
-  // }
-};
-
-ClassMatcherName.defaultProps = {
-  
-};
-
-export default connect(mapStateToProps)(ClassMatcherName);
+export default ClassMatcherName;
