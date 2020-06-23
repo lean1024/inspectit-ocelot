@@ -34,7 +34,18 @@ class ScopeContainer extends React.Component {
   }
 
   componentDidMount(){
+    
+    console.log('hiery');
+    console.log(this.props.scopeObject)
     this.addEventListenerToBreadCrumbs();
+    // TODO: manually styling, this must be set through a <style> for the classNames [p-listbox p-inputtext p-component] and [p-listbox-item]
+    document.getElementsByClassName('p-listbox p-inputtext p-component')[0].style.width= '1400px';
+    document.getElementsByClassName('p-listbox p-inputtext p-component')[1].style.width= '1400px';
+    const listItems = Array.from(document.getElementsByClassName('p-listbox-item'));
+    listItems.map( item => {
+      item.style.borderBottom = '1px solid black';
+      item.style.paddingBottom = '15px';
+    })
   }
 
   displayScope = () => this.setState({showScopeEditOverview: true, showGenericSelectorComponent: false, showMethodSelector: false});
@@ -126,19 +137,24 @@ class Scope extends React.Component {
         icon_scopeName: false,
         icon_classSelector: false,
         icon_methodSelector: false,
-        value: null,
-        cars: null
+        classSelectorArray: [],
+
+        selectedCity: null,
+        selectedCities: null,
+        selectedCar: 'BMW'
     };
 
     // this.carservice = new CarService();
     // this.carTemplate = this.carTemplate.bind(this);
   }
 
+  componentWillMount() {
+    this.setClassSelectorArray();
+  }
+
   toggle() {
       this.setState({disabled: !this.state.disabled});
   }
-
-
 
   listItemMethod(options) {
 
@@ -192,20 +208,161 @@ class Scope extends React.Component {
     showGenericSelectorComponent();
     setSelectorType('Method');
   }
+
+  methodSelectorListTemplate = (methodSelector) => {
+
+    const firstRow = { paddingRight: '15px', width: '125px'}
+    // console.log(methodSelector)
+    // console.log('#######################')
+    // console.log('')
+
+    return (
+      <React.Fragment>
+        <div style={{display: 'inline-flex'}}> 
+          <p style={{fontWeight: 'bold', width:'125px'}}> method selector: </p>
+          <p>returns the methods, which fullfill all of the options within this list item</p>
+        </div>
+        {Object.keys(methodSelector).map( key =>
+          <React.Fragment>
+          <div>
+            {Array.isArray(methodSelector[key]) && (
+              <div style={{display: '-webkit-box', marginBottom: '10px'}}>
+                <p style={{ ...firstRow}}> {key} </p>
+                { methodSelector[key].map(entry => 
+                  <React.Fragment>
+                    {typeof (entry) === 'object' && (
+                      <div style={{display: '', border: '1px solid black', padding: '7px', marginRight: '10px'}} >
+                        <p style={{margin: '0 0 5px 0'}}> {entry['matcher-mode']}</p>
+                        <p style={{margin: '0 0 0 0'}}> {entry.name} </p>
+                      </div>
+                    )}
+
+                    {typeof (entry) !== 'object' && (
+                      <div style={{ border: '1px solid black', padding: '7px', marginRight: '10px'}}>
+                        <p style={{margin: '0 0 0 0'}}> {entry} </p> 
+                      </div>
+                    )}
+                    
+                  </React.Fragment>
+                )}
+                
+              </div>
+            )}
+          </div>
+
+          <div>
+            {!Array.isArray(methodSelector[key]) && (
+              <div style={{display: 'inline-flex'}}>
+                <p style={{...firstRow}}> {key} </p>
+                <p> {methodSelector[key]} </p>
+                {/* true boolean cant be displayed, so we write it out */}
+                {methodSelector[key] === true && <p> true</p>} 
+                {methodSelector[key] === false && <p> false </p>} 
+              </div>
+            )}
+          </div>
+
+          </React.Fragment>
+        )}
+      </React.Fragment>
+    )
+  }
+
+  // <Listbox options={X} must be an array, scopeObject is not
+  setClassSelectorArray = () => {
+    const { scopeObject } = this.props;
+    let classSelectorArray = [];
+    Object.keys(scopeObject).map(key => {
+      if (key === 'interfaces' || key === 'type' || key === 'superclass'){
+        // json entry
+        let entry = { [key]: scopeObject[key]}
+        classSelectorArray.push(entry)
+      }
+    })
+    this.setState({classSelectorArray})
+  }
+
+  classSelectorListTemplate = (classSelector) => {
+    // interfaces : [ array ]
+    // type       : 
+    // superclass :
+
+    const firstRow = { paddingRight: '15px', width: '125px'}
+
+    return (
+      <React.Fragment>
+        {Object.keys(classSelector).map(key => 
+          <div style={{display: 'inline-block'}}>
+            <p style={{fontWeight: 'bold', width:'125px'}}> {key}: </p>
+            {/* classSelector interfaces  */}
+            { Array.isArray(classSelector[key]) && (
+              <React.Fragment>
+                {classSelector[key].map(entry =>
+                  <div style={{borderBottom: '1px solid black', marginBottom: '15px'}}>
+                    <div style={{display: 'inline-flex', padding: '7px', marginRight: '10px',}} >
+                      <p style={{margin: '0 0 5px 0',  width:'120px', whiteSpace: 'nowrap'}}> matcher-mode</p>
+                      <p style={{margin: '0 0 0 0'}}> {entry['matcher-mode']} </p>
+                    </div>
+                    <div style={{display: 'flex', padding: '7px', marginRight: '10px'}} >
+                      <p style={{margin: '0 0 5px 0',  width:'120px'}}> name</p>
+                      <p style={{margin: '0 0 0 0'}}> {entry.name} </p>
+                    </div>
+                  </div>
+                )}
+              </React.Fragment>
+            )}
+            {/* classSelector === ( types || superclass) */}
+            { !Array.isArray(classSelector[key]) && (
+                <React.Fragment>
+                  <div style={{display: 'inline-flex', padding: '7px', marginRight: '10px',}} >
+                    <p style={{margin: '0 0 5px 0',  width:'120px', whiteSpace: 'nowrap'}}> matcher-mode</p>
+                    <p style={{margin: '0 0 0 0'}}> {classSelector[key]['matcher-mode']} </p>
+                  </div>
+                  <div style={{display: 'flex', padding: '7px', marginRight: '10px'}} >
+                    <p style={{margin: '0 0 5px 0',  width:'120px'}}> name</p>
+                    <p style={{margin: '0 0 0 0'}}> {classSelector[key].name} </p>
+                  </div>
+                </React.Fragment>
+            )}
+          </div>
+        )}
+      </React.Fragment>
+    )
+  }
   
 
   render() {
-    const { icon_scopeName, icon_classSelector, icon_methodSelector } = this.state;
+    const { icon_scopeName, icon_classSelector, icon_methodSelector, classSelectorArray } = this.state;
     const { showGenericSelectorComponent, scopeObject } = this.props;
 
-  const options = [
-    {name: 'name', visibility: 'visibility', interface: 'interface', object:'object', annotation: 'annotation', },
-    {name: 'name', visibility: false, interface: false, object: false, annotation: 'annotation', },
-    {name: false, visibility: 'visibility', interface: false, object:'object', annotation: false, },
-    {name: false, visibility: false, interface: 'interface', object:false, annotation: false, },
-   ];
+    const options = [
+      {name: 'name', visibility: 'visibility', interface: 'interface', object:'object', annotation: 'annotation', },
+      {name: 'name', visibility: false, interface: false, object: false, annotation: 'annotation', },
+      {name: false, visibility: 'visibility', interface: false, object:'object', annotation: false, },
+      {name: false, visibility: false, interface: 'interface', object:false, annotation: false, },
+    ];
  
- 
+    const cities = [
+      {name: 'New York', code: 'NY'},
+      {name: 'Rome', code: 'RM'},
+      {name: 'London', code: 'LDN'},
+      {name: 'Istanbul', code: 'IST'},
+      {name: 'Paris', code: 'PRS'}
+    ];
+
+    const cars = [
+      {label: 'Audi', value: 'Audi'},
+      {label: 'BMW', value: 'BMW'},
+      {label: 'Fiat', value: 'Fiat'},
+      {label: 'Honda', value: 'Honda'},
+      {label: 'Jaguar', value: 'Jaguar'},
+      {label: 'Mercedes', value: 'Mercedes'},
+      {label: 'Renault', value: 'Renault'},
+      {label: 'VW', value: 'VW'},
+      {label: 'Volvo', value: 'Volvo'}
+    ];
+
+    const scopeName = scopeObject.scopeName;
 
     return (
       <div className="this">
@@ -277,14 +434,17 @@ class Scope extends React.Component {
 
             <div style={{background:'#EEEEEE', borderBottom: '1.5px solid white', padding: '25px'}}>
               <h3 style={{marginTop: '0px'}} >class selector</h3> 
-              <div style={{display:'flex', alignItems:'center'}}>
+              <div style={{display:'flex', alignItems:'center', marginBottom: '10px'}}>
                   <div  style={{maxWidth:'300px'}}>
                   <span style={{display: 'inline-block'}}> 
                     create a selector on a single class or a set of classes. 
                     Only the classes, which fullfill all option's within your class selector will be utilized.
                   </span>
                 </div>
-              <Button onClick={this.handleClassSelectorButton} style={{display: 'inline-block', marginLeft:'50px', padding:'10px'}}label="create class selector" />
+              <div>
+                <Button onClick={this.handleClassSelectorButton} style={{display: 'inline-block', marginLeft:'50px', padding:'10px'}}label="create class selector" />
+
+              </div>
               { !icon_classSelector && (
                 <i style={{border: '2px solid black', borderRadius:'15px', opacity: '0.1', marginLeft: '15px' }}className="pi pi-check"></i>
               )}
@@ -292,6 +452,9 @@ class Scope extends React.Component {
                 <i style={{border: '2px solid green', borderRadius:'15px' }}className="pi pi-check"></i>
               )}
               </div>
+              {/* classSelector here */}
+              <ListBox value={classSelectorArray} style={{ witdh: '800px' }} options={classSelectorArray} onChange={(e) => this.setState({selectedCity: e.value})} 
+              optionLabel="name" itemTemplate={this.classSelectorListTemplate} />
             </div>
 
             <div style={{background:'#EEEEEE', borderBottom: '1.5px solid white', padding: '25px'}}>
@@ -312,23 +475,9 @@ class Scope extends React.Component {
               )}
               </div>
 
-              <div>
-
-
-                <div className="content-section implementation">
-                    <div className="p-grid">
-                        <div className="p-col-12 p-md-8"  >
-                          <OrderList 
-                              value={options} 
-                              dragdrop={true} 
-                              itemTemplate={this.listItemMethod}
-                              responsive={true} listStyle={{height: '35em'}}
-                              onChange={(e) => this.setState({options: e.value})} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+              <ListBox value={scopeObject.methods} style={{ witdh: '800px' }} options={scopeObject.methods} onChange={(e) => this.setState({selectedCity: e.value})} 
+              optionLabel="name" itemTemplate={this.methodSelectorListTemplate} />
+              
             </div>
 
           </div>

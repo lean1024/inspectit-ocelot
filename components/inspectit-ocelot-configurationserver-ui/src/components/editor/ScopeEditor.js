@@ -39,6 +39,13 @@ const DEFAULT_EXPANDED_KEYS = { inspectit: true };
  */
 class ScopeEditor extends React.Component {
 
+  componentWillMount () {
+    const { config } = this.props;
+    console.log('#######nasty2############')
+    console.log('passed VisualEditor, the config value is now:', config)
+    console.log('')
+  }
+
   constructor() {
     super();
     this.state = {
@@ -88,10 +95,15 @@ class ScopeEditor extends React.Component {
   componentDidMount(){
     // if is necessary, since config object is empty. The component does always "exist" since we only hide it with display: 'none
     // display none is because #info1
-    this.setScopeNamesFromConfig();
     this.addEventListenerToBreadCrumbs();
 
   }
+
+  componentWillReceiveProps(){
+    // I had it placed inside componentDidMount. But sometimes the yml|value|config would be empty on mount ...?
+    this.setScopeNamesFromConfig();
+  }
+
 
   handleOnEdit = (e) => {
     this.setState({ showOverview: false})

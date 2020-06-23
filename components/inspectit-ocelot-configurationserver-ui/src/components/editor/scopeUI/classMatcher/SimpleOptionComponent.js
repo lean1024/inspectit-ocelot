@@ -66,17 +66,40 @@ class SimpleOptionComponent extends React.Component {
   
   // the component needs highlighting for better UX.
   // the "add" and "remove" icons indicate which div they will remove with a red outline 
+
+  // each template got a data-optiontype
+  // each mouseOver icon got a data-tobehighlighted 
+  // the function finds the corresponding div and highlights it
   handleMouseOver = (e) => {
     let tooltip = e.target.previousSibling;
-    let optionDiv = document.getElementById('nameDiv');
-    optionDiv.style.border = '4px solid red';
     tooltip.style.visibility = 'visible'
+
+    let optionType = e.target.dataset.tobehighlighted;
+    let targetArray = Array.from(document.querySelectorAll('[data-optiontype]'));
+    targetArray.map(element => {
+      if ( element.dataset.optiontype === optionType ) {
+        console.log(' ')
+        console.log('#################')
+        console.log(element)
+        console.log(element.dataset.optiontype)
+        console.log(optionType)
+        element.style.border = '1px solid transparent';
+        element.style.boxShadow = '0 0 0 3px red';
+      }
+    })
   } 
+
   handleMouseLeave = (e) => {
     let tooltip = e.target.previousSibling;
-    let optionDiv = document.getElementById('nameDiv');
     tooltip.style.visibility = 'hidden';
-    optionDiv.style.border = '4px solid floralwhite';
+
+    let optionType = e.target.dataset.tobehighlighted;
+    let targetArray = Array.from(document.querySelectorAll('[data-optiontype]'));
+    targetArray.map(element => {
+      if ( element.dataset.optiontype === optionType ) 
+      element.style.border = '1px solid black';
+      element.style.boxShadow = '';
+    })
   }
 
   handleItemRemoveOver = (e) => { 
@@ -191,13 +214,13 @@ class SimpleOptionComponent extends React.Component {
 
   // div, which contains an item for an optionType
   itemTemplate = (entry, index) => {
-    const background_bigDiv = "lightsteelblue";   
+    const background_bigDiv = "#EEEEEE";   
     // const background_bigDiv = "#bccace";
-    const background_uberSchriftDiv = "#fa9581";
-    const background_middleDiv = "#8bacbd"; 
+    const background_uberSchriftDiv = "white";
+    const background_middleDiv = "white"; 
     const background_extraField = "whitesmoke";
-    const color_uberSchriftText = "whitesmoke";
-    const color_elementSchrift = "whitesmoke";
+    const color_uberSchriftText = "darkslategrey";
+    const color_elementSchrift = "black";
 
     const { optionTypeText } = this.state;
 
@@ -228,7 +251,7 @@ class SimpleOptionComponent extends React.Component {
     const { scopeObject, optionType } = this.props;
 
     return (
-      <div style={{display: 'inline-flex'}}>
+      <div data-optiontype={optionType} style={{display: 'inline-flex'}}>
         <div className="p-col-6">
           <Checkbox inputId="cb1" value="PUBLIC" onChange={this.onCityChange} checked={this.state.cities.includes('PUBLIC')}></Checkbox>
           <label htmlFor="cb1" className="p-checkbox-label">PUBLIC</label>
@@ -259,13 +282,13 @@ class SimpleOptionComponent extends React.Component {
   }
 
   simpleOptionTemplate = () => {
-    const background_bigDiv = "lightsteelblue";   
+    const background_bigDiv = "#EEEEEE";   
     // const background_bigDiv = "#bccace";
-    const background_uberSchriftDiv = "#fa9581";
-    const background_middleDiv = "#8bacbd"; 
+    const background_uberSchriftDiv = "white";
+    const background_middleDiv = "white"; 
     const background_extraField = "whitesmoke";
-    const color_uberSchriftText = "whitesmoke";
-    const color_elementSchrift = "whitesmoke";
+    const color_uberSchriftText = "darkslategrey";
+    const color_elementSchrift = "black";
 
     const { upperText, selectorTypeText } = this.state;
     const { scopeObject, optionType } = this.props;
@@ -275,7 +298,7 @@ class SimpleOptionComponent extends React.Component {
 
     return (
       <React.Fragment>
-        <div id='nameDiv' style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '4px solid floralwhite'}}>
+        <div data-optiontype={optionType} style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '1px solid black'}}>
           { !editingScope && (
             <div style={{...divStyle}}>
               <p style={{ ...pStyle}}>I want to target the {selectorTypeText} that {upperText} </p>
@@ -297,26 +320,35 @@ class SimpleOptionComponent extends React.Component {
         
         <div style={{ position: 'relative', height: '20px' , display: 'flex', marginBottom: '5px',}}>
           <p style={{ visibility: 'hidden' , color:'red', position:'absolute', right:'35px', marginTop:'-3px'}}> remove this option </p>
-          <i onClick={this.removeOption} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} style={{ position: 'absolute', right: '5px', bottom:'-5px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"></i>
+          <i data-tobehighlighted={optionType} onClick={this.removeOption} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} style={{ position: 'absolute', right: '5px', bottom:'-5px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"></i>
         </div>
       </React.Fragment>
     )
   }
 
-  render(){
-    console.log('yeha');
-    console.log(scopeObject);
+  argumentsTemplate = () => {
 
+    return (
+      <div data-optiontype='here'>
+
+      </div>
+    )
+  }
+
+  render(){
+    
     const { upperText, selectorTypeText, itemTemplate } = this.state;
     const { scopeObject, optionType } = this.props;
+    console.log('yeha');
+    console.log(scopeObject);
     
-    const background_bigDiv = "lightsteelblue";   
+    const background_bigDiv = "#EEEEEE";   
     // const background_bigDiv = "#bccace";
-    const background_uberSchriftDiv = "#fa9581";
-    const background_middleDiv = "#8bacbd"; 
+    const background_uberSchriftDiv = "white";
+    const background_middleDiv = "white"; 
     const background_extraField = "whitesmoke";
-    const color_uberSchriftText = "whitesmoke";
-    const color_elementSchrift = "whitesmoke";
+    const color_uberSchriftText = "darkslategrey";
+    const color_elementSchrift = "black";
 
     // xml parse, ( detects which option gets the "first" status, and the other will get the text "additionally")
     let checkIfFirstElement = 'names';
@@ -326,7 +358,7 @@ class SimpleOptionComponent extends React.Component {
     const pStyle = { color: color_uberSchriftText , fontWeight: 'bold', marginTop: '0px' };
 // {scopeObject && scopeObject.names && (  important
     return(
-      <React.Fragment> 
+      <div style={{ marginTop:'25px'}}> 
         {scopeObject[optionType] && itemTemplate === 'simpleTemplate' && (
           this.simpleOptionTemplate()
         )}
@@ -334,9 +366,9 @@ class SimpleOptionComponent extends React.Component {
           this.checkBoxTemplate()
         )}
         {scopeObject[optionType] && itemTemplate === 'arguments' && (
-          this.checkBoxTemplate()
+          this.argumentsTemplate()
         )}
-      </React.Fragment>
+      </div>
     )
   }
 }

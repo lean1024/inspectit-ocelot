@@ -141,6 +141,9 @@ class EditorView extends React.Component {
           showEditor && 
           <div style={{display: displayScopeEditor}}>
             <div className="p-col visual-editor-container">
+            {console.log('#########nasty###########')}
+            {console.log('value=', value)}
+            {console.log('')}
                 <VisualEditor yamlConfig={value} onUpdate={onChange}>
                     {(onUpdate, config) => (
                         <ScopeEditor config={config} schema={schema} loading={loading} readOnly={readOnly} onUpdate={onUpdate} />
