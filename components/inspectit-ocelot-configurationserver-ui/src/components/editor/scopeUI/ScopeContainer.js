@@ -15,6 +15,7 @@ import React from 'react';
 
 import GenericSelectorComponent  from './classMatcher/GenericSelectorComponent '
 import SimpleOptionComponent from './classMatcher/SimpleOptionComponent';
+import SelectorContainer from './newComponents/SelectorContainer';
 
 
 // helper for a schema property type constants
@@ -429,9 +430,10 @@ class Scope extends React.Component {
               </div>
               {/* classSelector here */}
               <div style={{width:'1200px', background:'white', minHeight: '200px',  padding:'35px'}}>
-<SimpleOptionComponent selectorType={'Class'} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'type'} template={'simpleComponentTemplate'} />
+                <SelectorContainer scopeObject={scopeObject}/>
+{/* <SimpleOptionComponent selectorType={'Class'} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'type'} template={'simpleComponentTemplate'} />
 <SimpleOptionComponent selectorType={'Class'} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'interfaces'}  template={'simpleComponentTemplate'} />
-<SimpleOptionComponent selectorType={'Class'} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'superclass'}  template={'simpleComponentTemplate'} />
+<SimpleOptionComponent selectorType={'Class'} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'superclass'}  template={'simpleComponentTemplate'} /> */}
               </div>
               {/* <ListBox value={classSelectorArray} style={{ witdh: '800px' }} options={classSelectorArray} onChange={(e) => this.setState({selectedCity: e.value})} 
               optionLabel="name" itemTemplate={this.classSelectorListTemplate} /> */}
