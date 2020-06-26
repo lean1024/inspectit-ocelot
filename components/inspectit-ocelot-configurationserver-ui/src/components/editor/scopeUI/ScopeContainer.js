@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import GenericSelectorComponent  from './classMatcher/GenericSelectorComponent '
+import SimpleOptionComponent from './classMatcher/SimpleOptionComponent';
 
 
 // helper for a schema property type constants
@@ -28,24 +29,25 @@ const schemaType = {
 };
 
 class ScopeContainer extends React.Component {
-  state = { showScopeEditOverview: true, showGenericSelectorComponent: false, showMethodSelector: false }
+  state = { showScopeEditOverview: true, showGenericSelectorComponent: false, showMethodSelector: false , }
 
   componentWillUnmount () {
   }
 
+
   componentDidMount(){
-    
+
     console.log('hiery');
     console.log(this.props.scopeObject)
     this.addEventListenerToBreadCrumbs();
     // TODO: manually styling, this must be set through a <style> for the classNames [p-listbox p-inputtext p-component] and [p-listbox-item]
-    document.getElementsByClassName('p-listbox p-inputtext p-component')[0].style.width= '1400px';
-    document.getElementsByClassName('p-listbox p-inputtext p-component')[1].style.width= '1400px';
-    const listItems = Array.from(document.getElementsByClassName('p-listbox-item'));
-    listItems.map( item => {
-      item.style.borderBottom = '1px solid black';
-      item.style.paddingBottom = '15px';
-    })
+    // const anotherArray = Array.from(document.getElementsByClassName('p-listbox p-inputtext p-component'));
+    // anotherArray.map( element => element.style.width= '1400px');
+    // const listItems = Array.from(document.getElementsByClassName('p-listbox-item'));
+    // listItems.map( item => {
+    //   item.style.borderBottom = '1px solid black';
+    //   item.style.paddingBottom = '15px';
+    // })
   }
 
   displayScope = () => this.setState({showScopeEditOverview: true, showGenericSelectorComponent: false, showMethodSelector: false});
@@ -117,7 +119,7 @@ class ScopeContainer extends React.Component {
     return(
       <React.Fragment>
         { showScopeEditOverview && (
-          <Scope showGenericSelectorComponent={this.showGenericSelectorComponent} setSelectorType={this.setSelectorType} updateBreadCrumbs={updateBreadCrumbs} scopeObject={scopeObject} />
+          <Scope showGenericSelectorComponent={this.showGenericSelectorComponent} setSelectorType={this.setSelectorType} updateBreadCrumbs={updateBreadCrumbs} scopeObject={scopeObject} updateScopeObject={updateScopeObject} />
         )}
 
         { showGenericSelectorComponent && (
@@ -286,54 +288,27 @@ class Scope extends React.Component {
     // interfaces : [ array ]
     // type       : 
     // superclass :
-
+    const { scopeObject, updateScopeObject } = this.props;
+    const selectorType = 'Class';
     const firstRow = { paddingRight: '15px', width: '125px'}
+
+    console.log('updateScopeObject1',updateScopeObject)
 
     return (
       <React.Fragment>
-        {Object.keys(classSelector).map(key => 
-          <div style={{display: 'inline-block'}}>
-            <p style={{fontWeight: 'bold', width:'125px'}}> {key}: </p>
-            {/* classSelector interfaces  */}
-            { Array.isArray(classSelector[key]) && (
-              <React.Fragment>
-                {classSelector[key].map(entry =>
-                  <div style={{borderBottom: '1px solid black', marginBottom: '15px'}}>
-                    <div style={{display: 'inline-flex', padding: '7px', marginRight: '10px',}} >
-                      <p style={{margin: '0 0 5px 0',  width:'120px', whiteSpace: 'nowrap'}}> matcher-mode</p>
-                      <p style={{margin: '0 0 0 0'}}> {entry['matcher-mode']} </p>
-                    </div>
-                    <div style={{display: 'flex', padding: '7px', marginRight: '10px'}} >
-                      <p style={{margin: '0 0 5px 0',  width:'120px'}}> name</p>
-                      <p style={{margin: '0 0 0 0'}}> {entry.name} </p>
-                    </div>
-                  </div>
-                )}
-              </React.Fragment>
-            )}
-            {/* classSelector === ( types || superclass) */}
-            { !Array.isArray(classSelector[key]) && (
-                <React.Fragment>
-                  <div style={{display: 'inline-flex', padding: '7px', marginRight: '10px',}} >
-                    <p style={{margin: '0 0 5px 0',  width:'120px', whiteSpace: 'nowrap'}}> matcher-mode</p>
-                    <p style={{margin: '0 0 0 0'}}> {classSelector[key]['matcher-mode']} </p>
-                  </div>
-                  <div style={{display: 'flex', padding: '7px', marginRight: '10px'}} >
-                    <p style={{margin: '0 0 5px 0',  width:'120px'}}> name</p>
-                    <p style={{margin: '0 0 0 0'}}> {classSelector[key].name} </p>
-                  </div>
-                </React.Fragment>
-            )}
-          </div>
-        )}
+        <typeTemplate />
+        <interfacesTemplate />
+        <superclassTemplate />
       </React.Fragment>
     )
   }
-  
+
 
   render() {
     const { icon_scopeName, icon_classSelector, icon_methodSelector, classSelectorArray } = this.state;
-    const { showGenericSelectorComponent, scopeObject } = this.props;
+    const { showGenericSelectorComponent, scopeObject, updateScopeObject } = this.props;
+
+    console.log('hierBBB', scopeObject)
 
     const options = [
       {name: 'name', visibility: 'visibility', interface: 'interface', object:'object', annotation: 'annotation', },
@@ -453,8 +428,13 @@ class Scope extends React.Component {
               )}
               </div>
               {/* classSelector here */}
-              <ListBox value={classSelectorArray} style={{ witdh: '800px' }} options={classSelectorArray} onChange={(e) => this.setState({selectedCity: e.value})} 
-              optionLabel="name" itemTemplate={this.classSelectorListTemplate} />
+              <div style={{width:'1200px', background:'white', minHeight: '200px',  padding:'35px'}}>
+<SimpleOptionComponent selectorType={'Class'} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'type'} template={'simpleComponentTemplate'} />
+<SimpleOptionComponent selectorType={'Class'} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'interfaces'}  template={'simpleComponentTemplate'} />
+<SimpleOptionComponent selectorType={'Class'} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'superclass'}  template={'simpleComponentTemplate'} />
+              </div>
+              {/* <ListBox value={classSelectorArray} style={{ witdh: '800px' }} options={classSelectorArray} onChange={(e) => this.setState({selectedCity: e.value})} 
+              optionLabel="name" itemTemplate={this.classSelectorListTemplate} /> */}
             </div>
 
             <div style={{background:'#EEEEEE', borderBottom: '1.5px solid white', padding: '25px'}}>
