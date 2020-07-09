@@ -148,6 +148,8 @@ class EditorView extends React.Component {
                     {(onUpdate, config) => (
                         <ScopeEditor config={config} schema={schema} loading={loading} readOnly={readOnly} onUpdate={onUpdate} />
                     )}
+
+                    {/* JONAS TODO: {Object.keys(Liste).map(ListElement => <GenericItem ListElement={ListElement}/>)} */}
                 </VisualEditor>
             </div>
           </div>

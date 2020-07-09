@@ -1,5 +1,6 @@
-import Header from "./Header";
+import UpperHeader from "./UpperHeader";
 import Item from "./Item";
+import InterfaceListContainer from "./InterfaceListContainer"
 
 // Either the container displays a single <Item> or an List of <Item>
 class ItemContainer extends React.Component {
@@ -10,33 +11,26 @@ class ItemContainer extends React.Component {
     this.setAnnotationArrays
   }
 
-  setAnnotationArrays = () => {
-    const { scopeObject } = this.props;
-    let interfaceAnnotationArray = [];
-    let typeAnnotationArray = [];
-    let superclassAnnotationArray = [];
+  //   updatedValue beschreibt die Inhalte von interfaces, type , superclass
+  onItemUpdate = ( updatedValue  ) => {
+    let { updateScopeObject, scopeObject } = this.props;
+    if (index !== null) {
 
-    scopeObject.interfaces && scopeObject.interfaces.map(entry => {
-      if ( entry.annotations ) {
-        entry.annotations.map(json => {
-          interfaceAnnotationArray.push(json);
-        })
-      }
-    })
+    } else {
 
-    co
-
-    scopeObject.type && scopeObject.type.annotations && (typeAnnotationArray = scopeObject.type.annotations );
-    scopeObject.superclass && scopeObject.superclass.annotations && ( superclassAnnotationArray  = scopeObject.superclass.annotations );
-
-    this.setState({ annotationArrays: { interfaces: interfaceAnnotationArray , type: typeAnnotationArray, superclass: superclassAnnotationArray}}, () => console.log( 'hereLLL', this.state.annotationArrays));
+    }
+    console.log('ItemContainer - bbb ')
+    console.log('ItemContainer - scopeobject', scopeObject, 'optionType', optionType, 'updatedValue', updatedValue);
+    scopeObject[optionType] = updatedValue;
+    console.log(scopeObject);
+    updateScopeObject(scopeObject);
   }
 
   render() {
-    const { scopeObject, optionType, selectorType } = this.props;
+    const { scopeObject, optionType, selectorType, selectorContainerIndex, updateScopeObject  } = this.props;
     const { annotationArrays } = this.state;
 
-    console.log('aannotationArrays',annotationArrays);
+    console.log('selectorContainerIndex',selectorContainerIndex);
 
     console.log('')
     console.log('################## item')
@@ -46,19 +40,15 @@ class ItemContainer extends React.Component {
     return (
       scopeObject[optionType] && (
         <React.Fragment> 
-          {/* <Header selectorType={selectorType} optionType={optionType} /> */}
+          <UpperHeader selectorType={selectorType} optionType={optionType} selectorContainerIndex={selectorContainerIndex} />
           {/* list of items */}
-          { Array.isArray(scopeObject[optionType]) && (
-            <React.Fragment>
-              { scopeObject[optionType].map( (element, index) => 
-                <Item index={index} item={element} optionType={optionType} selectorType={selectorType} annotationArrays={annotationArrays} />
-              )}
-            </React.Fragment>
-          )}
+          { Array.isArray(scopeObject[optionType]) && <InterfaceListContainer onItemUpdate={this.onItemUpdate} index={selectorContainerIndex} items={scopeObject[optionType]} optionType={optionType} selectorType={selectorType} />}
 
           {/* single item */}
           { !Array.isArray(scopeObject[optionType]) && (
-            <Item item={scopeObject[optionType]} optionType={optionType} selectorType={selectorType} />
+            <React.Fragment>
+              <Item item={scopeObject[optionType]} optionType={optionType} selectorType={selectorType} onItemUpdate={this.onItemUpdate}/>
+            </React.Fragment>
           )}
         </React.Fragment>
       )

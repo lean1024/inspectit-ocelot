@@ -39,13 +39,6 @@ const DEFAULT_EXPANDED_KEYS = { inspectit: true };
  */
 class ScopeEditor extends React.Component {
 
-  componentWillMount () {
-    const { config } = this.props;
-    console.log('#######nasty2############')
-    console.log('passed VisualEditor, the config value is now:', config)
-    console.log('')
-  }
-
   constructor() {
     super();
     this.state = {
@@ -158,7 +151,7 @@ class ScopeEditor extends React.Component {
     );
   }
 
-  updateScopeObject = (scopeName, scopeObject) => {
+  updateScopeObject = ( scopeObject) => {
     // updating the scopeObject in state
     // this variable is being passed down, and must be updated
     // this variable is only setted in the doubleClick elsewise.
@@ -171,7 +164,9 @@ class ScopeEditor extends React.Component {
     let { onUpdate, config } = this.props;
     // scopeObject = this.removeArrayInScopeObject(scopeObject);
     
-    // added scopeName key to remember the name, removing it here.
+    let scopeName = scopeObject.scopeName;
+    // the cloned scopeObject got the scopeName to reference, which scope it to be updated and still haves it. 
+    // the updated value should not contain the scopeName thus we remove it.
     if (scopeObject.scopeName ) delete scopeObject['scopeName'];
     config.inspectit.instrumentation.scopes[scopeName] = scopeObject;
     onUpdate(config);

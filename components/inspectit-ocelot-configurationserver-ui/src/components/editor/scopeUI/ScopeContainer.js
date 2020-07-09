@@ -430,7 +430,7 @@ class Scope extends React.Component {
               </div>
               {/* classSelector here */}
               <div style={{width:'1200px', background:'white', minHeight: '200px',  padding:'35px'}}>
-                <SelectorContainer scopeObject={scopeObject}/>
+                <SelectorContainer scopeObject={scopeObject} updateScopeObject={updateScopeObject} />
 {/* <SimpleOptionComponent selectorType={'Class'} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'type'} template={'simpleComponentTemplate'} />
 <SimpleOptionComponent selectorType={'Class'} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'interfaces'}  template={'simpleComponentTemplate'} />
 <SimpleOptionComponent selectorType={'Class'} scopeObject={scopeObject} updateScopeObject={updateScopeObject}  optionType={'superclass'}  template={'simpleComponentTemplate'} /> */}
@@ -481,7 +481,7 @@ ScopeContainer.propTypes = {
   /** If it's read only */
   readOnly: PropTypes.bool,
   /** Function to invoke for full config update */
-  onUpdate: PropTypes.func,
+  updateScopeObject: PropTypes.func,
 };
 
 ScopeContainer.defaultProps = {

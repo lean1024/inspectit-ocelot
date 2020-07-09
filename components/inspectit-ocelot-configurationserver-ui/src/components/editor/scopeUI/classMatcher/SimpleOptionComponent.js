@@ -34,32 +34,32 @@ class SimpleOptionComponent extends React.Component {
     switch(optionType) {
     // class option types
       case 'type':
-        this.setState({upperText: `have a specific class name`, optionTypeText: 'class name'});
+        this.setState({upperText: `has a specific class name`, optionTypeText: 'class name'});
         break;
       case 'interfaces':
-        this.setState({upperText: 'implement an interface', optionTypeText: 'interface'}) 
+        this.setState({upperText: 'implements an interface', optionTypeText: 'interface'}) 
         break;
     // TODO: case annotation ? oder annotations plural
       case 'annotation':
-        this.setState({upperText: 'have an annotation', optionTypeText: 'annotation'})
+        this.setState({upperText: 'has an annotation', optionTypeText: 'annotation'})
         break;
       case 'superclass':
-        this.setState({upperText: 'inherit from a superclass', optionTypeText: 'superclass'})
+        this.setState({upperText: 'inherits from a superclass', optionTypeText: 'superclass'})
         break;
 
     // method option types
       case 'name':
-        this.setState({upperText: `have a specific method name`, optionTypeText: 'method name'})
+        this.setState({upperText: `has a specific method name`, optionTypeText: 'method name'})
         break;
       case 'visibility':
-        this.setState({upperText: 'have any of the visibilities', optionTypeText: 'visibility'}) 
+        this.setState({upperText: 'has any of the visibilities', optionTypeText: 'visibility'}) 
         break;
       // TODO: case annotation ? oder annotations plural
       case 'annotation':
-        this.setState({upperText: 'have an annotation', optionTypeText: 'annotation'})
+        this.setState({upperText: 'has an annotation', optionTypeText: 'annotation'})
         break;
       case 'arguments':
-        this.setState({upperText: 'have the following arguments', optionTypeText: 'arguments'})
+        this.setState({upperText: 'has the following arguments', optionTypeText: 'arguments'})
         break;
     }
 

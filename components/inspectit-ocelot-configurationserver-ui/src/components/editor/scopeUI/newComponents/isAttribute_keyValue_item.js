@@ -7,7 +7,6 @@ import { connect } from 'react-redux';
 import NameSelector from "./NameSelector";
 import LowerHeader from "./LowerHeader";
 import AnnotationContainer from './AnnotationContainer';
-import deepCopy from 'json-deep-copy';
 
 
 class Item extends React.Component {
@@ -79,36 +78,6 @@ class Item extends React.Component {
     e.target.nextSibling && (e.target.nextSibling.style.visibility = 'hidden');
   }
 
-  // superclass: { name - matcher-mode , annotations } 
-
-  // löschen und onChange 
-  onUpdateAnnotations = (updatedAnnotations) => {
-    const { item , onItemUpdate } = this.props;
-    const updated_item = deepCopy(item);
-    if( updatedAnnotations.length === 0) {
-       delete updated_item.annotations;
-    } else {
-      updated_item.annotations = updatedAnnotations;
-    }
-    onItemUpdate(updated_item);
-  }
-
-  // Objekt transformieren und zurück transformieren 
-  // generische Schnittstelle 
-  // TODO: obsolete wenn keine generische schnittstelle
-  onUpdateNameSelector = (updatedNameSelector) => {
-    // Änderungen müssen hier getan werden, name
-    // name - matcher-mode , annotations unberührt 
-    // superclass { }   ,  { name, matcher-mode } 
-    const { item , onItemUpdate } = this.props;
-    const updated_item = deepCopy(item);
-    updated_item 
-
-    onItemUpdate(updatedItem);
-  }
-
-
-
   render() {
     const background_bigDiv = "#EEEEEE";   
     // const background_bigDiv = "#bccace";
@@ -124,7 +93,7 @@ class Item extends React.Component {
     console.log('################## item')
     console.log(item);
 
-    const { item, optionType, selectorType, index, onItemUpdate } = this.props;
+    const { item, optionType, optionTypeText, index } = this.props;
 
     // The Class must implement all of the following interfaces
 
@@ -141,8 +110,8 @@ class Item extends React.Component {
       <div>
         <div data-optiontype={optionType} style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '1px solid black'}}>
           {optionType !== 'interfaces' && <LowerHeader optionType={optionType} />}
-          <NameSelector onUpdate={onUpdateNameSelector} style={{background: 'yellow'}} item={item} index={index} optionText={optionText} optionType={optionType} selectorType={selectorType} />
-          {item.annotations && <AnnotationContainer onItemUpdate={onUpdateAnnotations} items={item.annotations} optionType={optionType} selectorType={selectorType}/>}
+          <NameSelector style={{background: 'yellow'}} item={item} index={index} optionText={optionText} />
+          {item.annotations && <AnnotationContainer items={item.annotations} optionType={optionType} />}
         </div>
         
         <div style={{ position: 'relative', height: '20px' , display: 'flex', marginBottom: '5px',}}>
