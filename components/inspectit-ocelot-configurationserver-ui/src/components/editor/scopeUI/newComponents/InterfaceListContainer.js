@@ -13,28 +13,28 @@ class InterfaceListContainer extends React.Component {
   // [   {}   ,  {} ,   {}   , {}   ]
 
   onUpdateListItem = ( updatedValue , index ) => {
-    let { onItemUpdate, items } = this.props;
-    let updated_items = items;
+    let { onUpdate, items } = this.props;
+    let updatedItems = items;
 
-    // onUpdate wird in anschluss delete gerufen
-    if ( Object.keys(updatedValue).length == 0) {
-      // TODO: filter 
-    } else { // onUpdate wird in aktuallsierung aufgerufen
-      updated_items[0] = updatedValue;
+    if ( Object.keys(updatedValue).length == 0) { // the { } updatedValue is empty, thus it can be removed from the array 
+      updatedItems = updatedItems.filter( (item, filterIndex ) => {
+        if (filterIndex !== index ) return item;
+      })
+    } else { // updatedValue is not empty, and must be modified within the index postion in the array
+      updatedItems[index] = updatedValue;
     }
-
-    onItemUpdate(updated_items);
+    onUpdate(updatedItems);
   }
 
   render() {
-    const { items, optionType, selectorType, selectorContainerIndex , onItemUpdate} = this.props;
+    const { items, optionType, selectorType, selectorContainerIndex } = this.props;
  
     return (
       <React.Fragment>
         <div data-optiontype={optionType} style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: '#EEEEE', borderRadius: '10px' , border: '1px solid black'}}>
           <LowerHeader optionType={optionType} />
           { items.map( (element, index) => 
-            <Item onItemUpdate={  (updateObj) => this.onUpdateListItem(updateObj, index)} index={index} item={element} optionType={optionType} selectorType={selectorType} />
+            <Item onUpdate={(updateObj) => this.onUpdateListItem(updateObj, index)} index={index} item={element} optionType={optionType} selectorType={selectorType} />
           )}
 
         </div>

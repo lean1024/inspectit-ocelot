@@ -49,18 +49,32 @@ class AnnotationContainer extends React.Component {
   //   }
   // }
 
-  onUpdateAnnotationItem = ( updatedValue , index ) => {
-    let { onItemUpdate, items } = this.props;
-    let updated_items = items;
+  // onUpdateAnnotationItem = ( updatedValue , index ) => {
+  //   let { onUpdate, items } = this.props;
+  //   let updated_items = items;
 
-    // onUpdate wird in anschluss delete gerufen
-    if ( Object.keys(updatedValue).length == 0) {
-      // TODO: filter 
-    } else { // onUpdate wird in aktuallsierung aufgerufen
-      updated_items[0] = updatedValue;
+  //   // onUpdate wird in anschluss delete gerufen
+  //   if ( Object.keys(updatedValue).length == 0) {
+  //     // TODO: filter 
+  //   } else { // onUpdate wird in aktuallsierung aufgerufen
+  //     updated_items[0] = updatedValue;
+  //   }
+
+  //   onUpdate(updated_items);
+  // }
+
+  onUpdateListItem = ( updatedValue , index ) => {
+    let { onUpdate, items } = this.props;
+    let updatedItems = items;
+
+    if ( Object.keys(updatedValue).length == 0) { // the { } updatedValue is empty, thus it can be removed from the array 
+      updatedItems = updatedItems.filter( (item, filterIndex ) => {
+        if (filterIndex !== index ) return item;
+      })
+    } else { // updatedValue is not empty, and must be modified within the index postion in the array
+      updatedItems[index] = updatedValue;
     }
-
-    onItemUpdate(updated_items);
+    onUpdate(updatedItems);
   }
 
   render() {
@@ -70,7 +84,7 @@ class AnnotationContainer extends React.Component {
     return (
       <React.Fragment>
         {items.map( (annotationItem, index) => 
-          <NameSelector onUpdate={(updateObj) => this.onUpdateAnnotationItem(updateObj, index) } item={annotationItem} index={index} optionText={`${optionTypeText} has an annotation`}  optionType={'annotations'} selectorType={selectorType}/>
+          <NameSelector onUpdate={(updateObj) => this.onUpdateListItem(updateObj, index) } item={annotationItem} index={index} optionText={`${optionTypeText} has an annotation`}  optionType={'annotations'} selectorType={selectorType}/>
         )}
       </React.Fragment>
     )
