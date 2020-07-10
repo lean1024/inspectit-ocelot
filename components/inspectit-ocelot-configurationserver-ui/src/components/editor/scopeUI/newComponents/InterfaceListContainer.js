@@ -27,14 +27,15 @@ class InterfaceListContainer extends React.Component {
   }
 
   render() {
-    const { items, optionType, selectorType, selectorContainerIndex } = this.props;
+    // parent attribute = 'interfaces'
+    const { items, parentAttribute, selectorType, selectorContainerIndex } = this.props;
  
     return (
       <React.Fragment>
-        <div data-optiontype={optionType} style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: '#EEEEE', borderRadius: '10px' , border: '1px solid black'}}>
-          <LowerHeader optionType={optionType} />
+        <div data-optiontype={parentAttribute} style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: '#EEEEE', borderRadius: '10px' , border: '1px solid black'}}>
+          <LowerHeader optionType={parentAttribute} />
           { items.map( (element, index) => 
-            <Item onUpdate={(updateObj) => this.onUpdateListItem(updateObj, index)} index={index} item={element} optionType={optionType} selectorType={selectorType} />
+            <Item onUpdate={(updateObj) => this.onUpdateListItem(updateObj, index)} index={index} item={element} parentAttribute={parentAttribute} selectorType={selectorType} />
           )}
 
         </div>

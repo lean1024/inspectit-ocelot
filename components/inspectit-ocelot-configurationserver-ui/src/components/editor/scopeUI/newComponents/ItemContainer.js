@@ -77,12 +77,12 @@ class ItemContainer extends React.Component {
         <React.Fragment> 
           <UpperHeader selectorType={selectorType} optionType={optionType} selectorContainerIndex={selectorContainerIndex} />
           {/* list of items */}
-          { Array.isArray(item[optionType]) && <InterfaceListContainer onUpdate={this.onUpdateInteraces} index={selectorContainerIndex} items={item[optionType]} optionType={optionType} selectorType={selectorType} />}
+          { Array.isArray(item[optionType]) && <InterfaceListContainer onUpdate={this.onUpdateInteraces} index={selectorContainerIndex} items={item[optionType]} parentAttribute={optionType} selectorType={selectorType} />}
 
           {/* single item */}
           { !Array.isArray(item[optionType]) && (
             <React.Fragment>
-              <Item item={item[optionType]} optionType={optionType} selectorType={selectorType} onUpdate={(updatedValue) => this.onGenericUpdate(updatedValue, optionType)}/>
+              <Item item={item[optionType]} parentAttribute={optionType} selectorType={selectorType} onUpdate={(updatedValue) => this.onGenericUpdate(updatedValue, optionType)}/>
             </React.Fragment>
           )}
         </React.Fragment>

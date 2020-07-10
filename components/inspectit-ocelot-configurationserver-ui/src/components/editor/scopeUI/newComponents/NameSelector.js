@@ -137,7 +137,7 @@ class NameSelector extends React.Component {
     return (
       <React.Fragment>
         {/* if item.name is not defined the input still got displayed with the last known value, or with a value, thus we check wether a value exist  */}
-        { item.name && ( 
+        { item['matcher-mode'] && ( 
           <div style={{display: 'inline-grid'}}>
             <div style={{display: 'inline-flex',  marginBottom: '5px', position:'relative', background: background_middleDiv, padding: '10px 30px 0px 10px', borderRadius:'10px'}}>
               <p style={{ color: color_elementSchrift}}> ... {optionText}, that </p>

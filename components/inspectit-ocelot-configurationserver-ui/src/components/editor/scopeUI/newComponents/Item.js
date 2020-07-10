@@ -9,8 +9,43 @@ import LowerHeader from "./LowerHeader";
 import AnnotationContainer from './AnnotationContainer';
 import deepCopy from 'json-deep-copy';
 
+import {SplitButton} from 'primereact/splitbutton';
+import { getSplitButtonsItems , enableCreateAttributeWithinSplitItemEntries} from './utils/splitButtonItems/getSplitButtonItems';
+import { invalidActions, splittButtonItemIsInvalid, adjustInvalidSplitButtonItem } from './utils/splitButtonItems/invalidLabelsTopDown';
+
 
 class Item extends React.Component {
+  state = { splitMenuItems: [] }
+
+  componentWillMount() {
+    const {parentAttribute, item } = this.props;
+    
+    // let updated_SplitButtonItems = this.updated_SplitButtonItems();
+    // this.setState({splitButtonItems: updated_SplitButtonItems})
+  }
+
+  // updated_SplitButtonItems = () => {
+  //   const {parentAttribute, item } = this.props;
+  //   let updatedSplittButtonArray =  getSplitButtonsItems(parentAttribute, item);
+  //   if( updatedSplittButtonArray ) updatedSplittButtonArray.map(json => json.command = this.addAttribute) ;
+  //   return updatedSplittButtonArray;
+  // }
+
+  // funktionalität 
+  addAttribute = () => {
+    // parentAttribute is not used, but here to illustrate what is happening between the parentAttribute and its new attribute
+    const {parentAttribute, item, onUpdate } = this.props;
+    let updatedItem = deepCopy(item);  // parentAttribute => 'interface' | item => {name: ..., matcher-mode: ... } 
+    // adding now annotations
+    
+    let genericAttribute = 'annotations'
+    let genericExampleEntry = [{ name: '' , ['matcher-mode']: 'EQUALS_FULLY' }];
+    updatedItem[genericAttribute] = genericExampleEntry;
+    alert('heha')
+    onUpdate(updatedItem);
+  }
+
+ 
 
   // the component needs highlighting for better UX.
   // the "add" and "remove" icons indicate which div they will remove with a red outline 
@@ -108,6 +143,24 @@ class Item extends React.Component {
   // }
 
 
+
+
+  createSplitButtonItems = () => {
+    const { parentAttribute, item, onUpdate } = this.props; 
+    let splittButtonItems = getSplitButtonsItems(parentAttribute, item); // .command key must be added + item must be passed to createAttribute
+    splittButtonItems = enableCreateAttributeWithinSplitItemEntries(splittButtonItems, item, onUpdate);
+    
+    // adjusting the single items
+    splittButtonItems.map(splittButtonItem => {
+      const invalidActionJson = splittButtonItemIsInvalid(item, splittButtonItem)  // returns object with required information for the following actions or false
+      console.log('xuxa')
+      console.log(invalidActionJson);
+      if(invalidActionJson) splittButtonItem = adjustInvalidSplitButtonItem(splittButtonItem, invalidActionJson);
+    })
+
+    return splittButtonItems;
+  }
+
   render() {
     const background_bigDiv = "#EEEEEE";   
     // const background_bigDiv = "#bccace";
@@ -117,13 +170,10 @@ class Item extends React.Component {
     const color_uberSchriftText = "darkslategrey";
     const color_elementSchrift = "black";
 
-    console.log('')
-    console.log('')
-    console.log('')
-    console.log('################## item')
-    console.log(item);
 
-    const { item, optionType, selectorType, index, onUpdate } = this.props;
+
+    const { item, parentAttribute, selectorType, index, onUpdate } = this.props;
+    // const { splitButtonItems } = this.state;
 
     // The Class must implement all of the following interfaces
 
@@ -134,19 +184,22 @@ class Item extends React.Component {
     let editingScope = false;
 
     let optionText;
-    optionType === 'interfaces' ? optionText = 'The interface has a name' : optionText = 'has a name';
+    parentAttribute === 'interfaces' ? optionText = 'The interface has a name' : optionText = 'has a name';
+
+    const splitButtonItems = this.createSplitButtonItems();
 
     return (
       <div>
-        <div data-optiontype={optionType} style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '1px solid black'}}>
-          {optionType !== 'interfaces' && <LowerHeader optionType={optionType} />}
-          <NameSelector onUpdate={onUpdate} style={{background: 'yellow'}} item={item} index={index} optionText={optionText} optionType={optionType} selectorType={selectorType} />
-          {item.annotations && <AnnotationContainer onUpdate={this.onUpdateAnnotations} items={item.annotations} optionType={optionType} selectorType={selectorType}/>}
+        <div data-optiontype={parentAttribute} style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '1px solid black'}}>
+          {parentAttribute !== 'interfaces' && <LowerHeader optionType={parentAttribute} />}
+          <NameSelector onUpdate={onUpdate} style={{background: 'yellow'}} item={item} index={index} optionText={optionText} optionType={parentAttribute} selectorType={selectorType} />
+          {item.annotations && <AnnotationContainer onUpdate={this.onUpdateAnnotations} items={item.annotations} optionType={parentAttribute} selectorType={selectorType}/>}
+          <SplitButton tooltip="TODO: tooltip? or not" style={{position:'absolute', top:'10px' , right:'10px'}} label="add functionality" icon="pi pi-plus" onClick={this.save} model={splitButtonItems}></SplitButton>
         </div>
         
         <div style={{ position: 'relative', height: '20px' , display: 'flex', marginBottom: '5px',}}>
           <p style={{ visibility: 'hidden' , color:'red', position:'absolute', right:'35px', marginTop:'-3px'}}> remove this option </p>
-          <i data-tobehighlighted={optionType} onClick={this.removeOption} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} style={{ position: 'absolute', right: '5px', bottom:'-5px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"></i>
+          <i data-tobehighlighted={parentAttribute} onClick={this.removeOption} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} style={{ position: 'absolute', right: '5px', bottom:'-5px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"></i>
         </div>
 
 
