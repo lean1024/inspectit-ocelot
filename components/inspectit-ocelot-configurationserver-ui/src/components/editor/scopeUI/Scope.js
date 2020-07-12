@@ -114,6 +114,62 @@ class Scope extends React.Component {
     onUpdate(updatedItem);
   }
 
+  
+  // do not read, this function is not used
+  // thinking how onUpdate must be implemented, when the original item got splitted up
+  // thinking about how the reconstruction must look like 
+  onGenericGroupUpdate = ( groupUpdate, groupAttributeAlias ) => {
+    let { onUpdate, item } = this.props;
+    let updatedItem = deepCopy(item);
+
+    // returns an array of the correct attributes. Class Selector => type, interfaces, superclass
+    // let toBeUpdatedAttributes = getAttributesFromGroupAlias(); 
+    let toBeUpdatedAttributes = ['type', 'superclass','interfaces'];
+
+    //
+    toBeUpdatedAttributes.map( attribute => {
+      // optimization, only the attributes of the item, which are have changed should be updated (maybe implement)
+
+      // checking if updatedItem needs it value to be deleted (generic assuptiom)
+          // checking wether the attribute is an array or object and then if the length is zero
+      
+      // reconstructing the update into the item
+      updatedItem[attribute] = groupUpdate[attribute];
+      
+      onUpdate(updatedItem);
+    })
+  }
+
+  // do not read, this function is not used
+  // thinking about how to groupUpItems 
+  // thinking about how to reconstruced them
+  // thinkin about how this is usefull
+  // thinking about how this is a generic aspect of a hierarchy object 
+  groupAttributesFromItemUnderAnAlias = () => {
+    let { scopeObject } = this.props;
+    let item = scopeObject;
+    let copiedItem = deepCopy(item);
+
+    let groupedUpItems // { groupAlias1: { attribute1: ..., attribute 2:,,, },   groupAlias2: { attribute2: ..., attribute2: }, groupAlias3: ... } 
+    // let groupAliasMapping = getGroupAliasMapping(); TODO: implement a strucutre like that above
+    let groupAliasMapping = { class: ['interfaces', 'superclass', 'type']  }
+
+    Object.keys(copiedItem).map(itemAttribute => { // 
+      // logic for splitting up, analysise
+      Object.keys(groupAliasMapping).map( groupAlias => { // groupAlias, class
+        let group = {groupAlias };
+        groupAliasMapping[groupAlias].map( groupAttribute => { // interface, type, superclass 
+          if (itemAttribute === groupAttribute ) { // item example interface, type, superclass, method, x , y , z 
+            group[itemAttribute] = copiedItem[itemAttribute];
+            delete copiedItem[itemAttribute];
+          }
+        })
+        // { interface, type, superclass }
+        copiedItem[groupAlias] = group;
+      })
+    })
+  }
+
   componentWillMount(){
     // this.groupAttributesFromItemUnderAnAlias();
   }
