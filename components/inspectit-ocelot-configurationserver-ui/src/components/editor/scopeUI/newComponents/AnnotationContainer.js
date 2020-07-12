@@ -35,34 +35,6 @@ class AnnotationContainer extends React.Component {
       }
   }
 
-  // onUpdateAnnotationItem = (index) => {
-  //   let { onItemUpdate, item , optionType, selectorType } = this.props;
-  //   if ( selectorType === 'Class') {
-  //     // optionType is either type, interfaces, annotations, superclass 
-  //     let type = e.target.name;
-  //     let index = e.target.id;
-  //     // type a) name b) matcher-mode
-  //     // index ist entweder undefined für superclass und type attribute oder definiert für interfaces
-  //     item[type] = e.target.value;
-  //     onItemUpdate(optionType, item, index)
-
-  //   }
-  // }
-
-  // onUpdateAnnotationItem = ( updatedValue , index ) => {
-  //   let { onUpdate, items } = this.props;
-  //   let updated_items = items;
-
-  //   // onUpdate wird in anschluss delete gerufen
-  //   if ( Object.keys(updatedValue).length == 0) {
-  //     // TODO: filter 
-  //   } else { // onUpdate wird in aktuallsierung aufgerufen
-  //     updated_items[0] = updatedValue;
-  //   }
-
-  //   onUpdate(updated_items);
-  // }
-
   onUpdateListItem = ( updatedValue , index ) => {
     let { onUpdate, items } = this.props;
     let updatedItems = items;
@@ -84,7 +56,7 @@ class AnnotationContainer extends React.Component {
     return (
       <React.Fragment>
         {items.map( (annotationItem, index) => 
-          <NameSelector onUpdate={(updateObj) => this.onUpdateListItem(updateObj, index) } item={annotationItem} index={index} optionText={`${optionTypeText} has an annotation`}  optionType={'annotations'} selectorType={selectorType}/>
+          <NameSelector onUpdate={(updateObj) => this.onUpdateListItem(updateObj, index) } item={annotationItem} index={index} optionText={`${optionTypeText} has an annotation`}  optionType={'annotations'} />
         )}
       </React.Fragment>
     )

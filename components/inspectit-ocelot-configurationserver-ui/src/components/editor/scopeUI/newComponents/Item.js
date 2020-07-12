@@ -142,7 +142,7 @@ class Item extends React.Component {
           {parentAttribute !== 'interfaces' && <LowerHeader optionType={parentAttribute} />}
           <NameSelector onUpdate={onUpdate} style={{background: 'yellow'}} item={item} index={index} optionText={optionText} optionType={parentAttribute} />
           {item.annotations && <AnnotationContainer onUpdate={this.onUpdateAnnotations} items={item.annotations} optionType={parentAttribute} />}
-          <SplitButton tooltip="TODO: tooltip? or not" style={{position:'absolute', top:'10px' , right:'10px'}} label="add functionality" icon="pi pi-plus" onClick={this.save} model={splitButtonItems}></SplitButton>
+          <SplitButton tooltip="TODO: tooltip? or not" style={{position:'absolute', top:'10px' , right:'10px'}} label="add " icon="pi pi-plus" onClick={this.save} model={splitButtonItems}></SplitButton>
         </div>
         
         <div style={{ position: 'relative', height: '20px' , display: 'flex', marginBottom: '5px',}}>
