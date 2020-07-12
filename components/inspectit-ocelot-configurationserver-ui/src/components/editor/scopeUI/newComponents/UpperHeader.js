@@ -14,11 +14,6 @@ class UpperHeader extends React.Component {
         this.setState({selectorTypeText: 'methods'})
     }
 
-    // The Class must implement all of the following interfaces
-
-
-     // info# why do i introduce optionTypeText? This component should display the "optionType". The optionType for class name is
-    // type. This cant be a text, so the component needs to re-write the text to "class name".
     switch(optionType) {
       // class option types
         case 'type':
@@ -53,23 +48,10 @@ class UpperHeader extends React.Component {
   }
 
   render() {
-    // TODO: delete?
-    const background_bigDiv = "#EEEEEE";   
-    // const background_bigDiv = "#bccace";
     const background_uberSchriftDiv = "white";
-    const background_middleDiv = "white"; 
-    const background_extraField = "whitesmoke";
-    const color_uberSchriftText = "darkslategrey";
-    const color_elementSchrift = "black";
-
-    const { upperText } = this.state;
     const { selectorType, selectorContainerIndex } = this.props;
-
     const divStyle = { padding: '5px 10px 0 10px' ,height:'30px',  background: background_uberSchriftDiv, width: 'fit-content', outline:'', marginBottom: '10px', marginTop: '30px', borderRadius: '10px' };
     const pStyle = { fontWeight: 'bold', marginTop: '0px' };
-
-    const editingScope = false;
-
     
     return (
       <div style={{...divStyle}}>

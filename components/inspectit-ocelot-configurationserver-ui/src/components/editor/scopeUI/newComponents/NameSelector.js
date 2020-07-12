@@ -1,58 +1,13 @@
 
 import {InputText} from 'primereact/inputtext';
 import {Dropdown} from 'primereact/dropdown';
-import {Checkbox} from 'primereact/checkbox';
-import { Button } from 'primereact/button';
-import { connect } from 'react-redux';
 import { cloneDeep } from 'lodash';
 import deepCopy from 'json-deep-copy';
 
 class NameSelector extends React.Component {
   state = { optionTypeText: undefined, }
-
   componentBorderRef= React.createRef();
 
-  componentWillMount(){
-    // const { optionType } = this.props;
-
-    // switch(optionType) {
-    //   // class option types
-    //     case 'type':
-    //       this.setState({optionTypeText: 'class name'});
-    //       break;
-    //     case 'interfaces':
-    //       this.setState({ optionTypeText: 'interface'}) 
-    //       break;
-    //   // TODO: case annotation ? oder annotations plural
-    //     case 'annotation':
-    //       this.setState({ optionTypeText: 'annotation'})
-    //       break;
-    //     case 'superclass':
-    //       this.setState({ optionTypeText: 'superclass'})
-    //       break;
-  
-    //   // method option types
-    //     case 'name':
-    //       this.setState({optionTypeText: 'method name'})
-    //       break;
-    //     case 'visibility':
-    //       this.setState({ optionTypeText: 'visibility'}) 
-    //       break;
-    //     // TODO: case annotation ? oder annotations plural
-    //     case 'annotation':
-    //       this.setState({optionTypeText: 'annotation'})
-    //       break;
-    //     case 'arguments':
-    //       this.setState({optionTypeText: 'arguments'})
-    //       break;
-    //   }
-  }
-
-  // generisch attribute ( parameter 1 ist der OptionType , new Value)
-
-  // onUpdate wird für input (attribute = name) und dropdown (attribute = matcher-mode) aufgerufen , newValue ist der Wert 
-  // deepCopy um ein zu seperieren von config object, und dieses nicht mitzumodifizieren.
-  
   onUpdate = (attribute, newValue) => {
     const { item, onUpdate } = this.props;
     const updated_item = deepCopy(item);
@@ -60,10 +15,6 @@ class NameSelector extends React.Component {
     onUpdate(updated_item);
   }
 
-
-  // the item can be inside an array (interfaces)
-  // the item can be not inside an array (type, superclass)
-  // index is not undefined if the optionType is an array
   deleteItem = (e) => {
     let { item, onUpdate, optionType, attributesToDelete } = this.props;
     // Notziz diese Komponente ändert nur 2 Attribute Vorteil 
@@ -85,17 +36,13 @@ class NameSelector extends React.Component {
   }
 
   render() {
-
-    const background_bigDiv = "#EEEEEE";   
-    // const background_bigDiv = "#bccace";
-    const background_uberSchriftDiv = "white";
     const background_middleDiv = "white"; 
-    const background_extraField = "whitesmoke";
-    const color_uberSchriftText = "darkslategrey";
     const color_elementSchrift = "black";
+    const { item, optionType,  } = this.props;
 
-    const { item, index, optionText, onUpdate, optionType } = this.props;
-    const { expanded } = this.state;
+    let optionText;
+    optionType === 'interfaces' ? optionText = 'The interface has a name' : optionText = 'has a name';
+    
     
     // dropdown data
     const dropdownOptions = [
@@ -118,7 +65,7 @@ class NameSelector extends React.Component {
               <Dropdown style={{marginLeft:'10px', fontSize: '13px',  position: 'relative', height:'35px', bottom: '-5px'}} value={item['matcher-mode']} options={dropdownOptions} onChange={(e) => this.onUpdate('matcher-mode', e.value)} placeholder="EQUALS_FULLY"/>
               <p style={{  color: color_elementSchrift ,  marginLeft: '10px' }}>the term</p>
               <InputText style={{ textAlign: 'middle', width: '250px', marginLeft: '10px' , position: 'relative',  height:'35px', bottom: '-5px'}} value={item.name} onChange={(e) => this.onUpdate('name', e.target.value)} />
-              <i name='name' id={index}  onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} onClick={this.deleteItem} style={{ position: 'absolute', bottom:'0px', right: '0px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"/>
+              <i onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} onClick={this.deleteItem} style={{ position: 'absolute', bottom:'0px', right: '0px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"/>
             </div>
           </div>
         )}

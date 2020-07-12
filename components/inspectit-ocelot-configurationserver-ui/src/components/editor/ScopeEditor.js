@@ -14,25 +14,16 @@ import React from 'react';
 import Scope from './scopeUI/Scope';
 import { BreadCrumb } from 'primereact/breadcrumb';
 
+// Faster deep-copy for json style object.
+
+// Features
+// Simplified lodash.deepClone, maybe 15 times faster when copy many compilcated objects.
+// Only support plain objects with number, string, array, boolean
 import deepCopy from 'json-deep-copy'
 
 
-// helper for a schema property type constants
-const schemaType = {
-  COMPOSITE: 'COMPOSITE',
-  STRING: 'STRING',
-  INTEGER: 'INTEGER',
-  FLOAT: 'FLOAT',
-  BOOLEAN: 'BOOLEAN',
-  DURATION: 'DURATION',
-  ENUM: 'ENUM',
-};
-
-const DEFAULT_EXPANDED_KEYS = { inspectit: true };
-
 /**
  * Editor for showing the scopes of the config file as UI
- *
  */
 class ScopeEditor extends React.Component {
 
@@ -49,7 +40,23 @@ class ScopeEditor extends React.Component {
     this.setScopeNamesFromConfig();
   }
 
+  // { !showOverview && ( <Scope ... to either display the Scopelist or the single scope 
   displayOverview = () => this.setState({ showOverview: true})
+
+  handleOnEdit = () => this.setState({ showOverview: false});
+
+  handleDoubleClick = (e) => {
+    const name = e.target.dataset.name;
+    const { config } = this.props;
+
+    // TODO: inserting name into scopeObject is obsolete, since onUpdate= (updatedValue) => this.onUpdate(updatedValue, scopeName)
+    // // getting the correct single scopeObject to pass as props
+    let scopeObject = config.inspectit.instrumentation.scopes[name];
+    // scopeObject['scopeName'] = name;
+
+    const breadCrumbItems = [{'label': 'Scope Overview'}, {'label': name }];
+    this.setState({ scopeObject, showOverview: false, breadCrumbItems, currentlyDisplayScopeName: name})
+  }
       
   setScopeNamesFromConfig = () => {
     // asserting that accessing attributes does not happen on undefined. Since sometimes the inspectIt wasnt passed
@@ -82,21 +89,6 @@ class ScopeEditor extends React.Component {
     })
   }
 
-  handleOnEdit = () => this.setState({ showOverview: false});
-
-  handleDoubleClick = (e) => {
-    const name = e.target.dataset.name;
-    const { config } = this.props;
-
-    // TODO: inserting name into scopeObject is obsolete, since onUpdate= (updatedValue) => this.onUpdate(updatedValue, scopeName)
-    // // getting the correct single scopeObject to pass as props
-    let scopeObject = config.inspectit.instrumentation.scopes[name];
-    // scopeObject['scopeName'] = name;
-
-    const breadCrumbItems = [{'label': 'Scope Overview'}, {'label': name }];
-    this.setState({ scopeObject, showOverview: false, breadCrumbItems, currentlyDisplayScopeName: name})
-  }
-
   updateBreadCrumbs = breadCrumbItems => this.setState({ breadCrumbItems});
   
   itemTemplate = (option) => {
@@ -108,7 +100,6 @@ class ScopeEditor extends React.Component {
   }
 
   onUpdate = ( updatedValue, scopeName ) => {
-    const { scopeObject } = this.state;
     let { onUpdate, config } = this.props;
     // updating the scopeObject in state
     // this variable is being passed down, and must be updated

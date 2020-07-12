@@ -1,9 +1,3 @@
-import {InputText} from 'primereact/inputtext';
-import {Dropdown} from 'primereact/dropdown';
-import {Checkbox} from 'primereact/checkbox';
-import { Button } from 'primereact/button';
-import { connect } from 'react-redux';
-
 import NameSelector from "./NameSelector";
 import LowerHeader from "./LowerHeader";
 import AnnotationContainer from './AnnotationContainer';
@@ -11,40 +5,13 @@ import deepCopy from 'json-deep-copy';
 
 import {SplitButton} from 'primereact/splitbutton';
 import { getSplitButtonsItems , enableCreateAttributeWithinSplitItemEntries} from './utils/splitButtonItems/getSplitButtonItems';
-import { invalidActions, splittButtonItemIsInvalid, adjustInvalidSplitButtonItem } from './utils/splitButtonItems/invalidLabelsTopDown';
+import { splittButtonItemIsInvalid, adjustInvalidSplitButtonItem } from './utils/splitButtonItems/invalidLabelsTopDown';
 
 class Item extends React.Component {
   state = { splitMenuItems: [] }
 
+  // reference for red highlighting over remove icon hover
   componentBorderRef = React.createRef();
-
-  componentWillMount() {
-    const {parentAttribute, item } = this.props;
-    
-    // let updated_SplitButtonItems = this.updated_SplitButtonItems();
-    // this.setState({splitButtonItems: updated_SplitButtonItems})
-  }
-
-  // updated_SplitButtonItems = () => {
-  //   const {parentAttribute, item } = this.props;
-  //   let updatedSplittButtonArray =  getSplitButtonsItems(parentAttribute, item);
-  //   if( updatedSplittButtonArray ) updatedSplittButtonArray.map(json => json.command = this.addAttribute) ;
-  //   return updatedSplittButtonArray;
-  // }
-
-  // funktionalität 
-  addAttribute = () => {
-    // parentAttribute is not used, but here to illustrate what is happening between the parentAttribute and its new attribute
-    const {parentAttribute, item, onUpdate } = this.props;
-    let updatedItem = deepCopy(item);  // parentAttribute => 'interface' | item => {name: ..., matcher-mode: ... } 
-    // adding now annotations
-    
-    let genericAttribute = 'annotations'
-    let genericExampleEntry = [{ name: '' , ['matcher-mode']: 'EQUALS_FULLY' }];
-    updatedItem[genericAttribute] = genericExampleEntry;
-    alert('heha')
-    onUpdate(updatedItem);
-  }
 
   handleMouseOver = (e) => {
     let tooltip = e.target.previousSibling;
@@ -62,18 +29,25 @@ class Item extends React.Component {
     element.style.boxShadow = '';
   }
 
-  // superclass: { name - matcher-mode , annotations } 
 
-  // löschen und onChange 
-  onUpdateAnnotations = (updatedAnnotations) => {
-    const { item , onUpdate } = this.props;
-    const updated_item = deepCopy(item);
-    if( updatedAnnotations.length === 0) {
-       delete updated_item.annotations;
-    } else {
-      updated_item.annotations = updatedAnnotations;
+  onGenericUpdate = ( updatedValue, optionType ) => {
+    let { onUpdate, item } = this.props;
+    let updatedItem = deepCopy(item);
+    
+    if(Array.isArray(updatedValue) === true) {
+      if( updatedValue.length === 0 ) {
+        delete updatedItem[optionType];
+      } else {
+        updatedItem[optionType] = updatedValue;
+      }
+    } else {  // assumption, the updateValue is a json thus Object.keys
+      if ( Object.keys(updatedValue).length === 0) {
+        delete updatedItem[optionType];
+      } else {
+        updatedItem[optionType] = updatedValue;
+      }
     }
-    onUpdate(updated_item);
+    onUpdate(updatedItem);
   }
 
   // // Objekt transformieren und zurück transformieren 
@@ -90,57 +64,32 @@ class Item extends React.Component {
   //   onItemUpdate(updatedItem);
   // }
 
-
-
-
   createSplitButtonItems = () => {
     const { parentAttribute, item, onUpdate } = this.props; 
-    let splittButtonItems = getSplitButtonsItems(parentAttribute, item); // .command key must be added + item must be passed to createAttribute
+    let splittButtonItems = getSplitButtonsItems(parentAttribute, item); 
+    // .command key must be added + item must be passed to createAttribute(item), since the function does not have the context to access item
     splittButtonItems = enableCreateAttributeWithinSplitItemEntries(splittButtonItems, item, onUpdate);
     
-    // adjusting the single items
+    // adjusting the items
     splittButtonItems.map(splittButtonItem => {
-      const invalidActionJson = splittButtonItemIsInvalid(item, splittButtonItem)  // returns object with required information for the following actions or false
+      const invalidActionJson = splittButtonItemIsInvalid(item, splittButtonItem)  // returns object with required information for the following actions or simply false
       if(invalidActionJson) splittButtonItem = adjustInvalidSplitButtonItem(splittButtonItem, invalidActionJson);
     })
-
     return splittButtonItems;
   }
 
   render() {
     const background_bigDiv = "#EEEEEE";   
-    // const background_bigDiv = "#bccace";
-    const background_uberSchriftDiv = "white";
-    const background_middleDiv = "white"; 
-    const background_extraField = "whitesmoke";
-    const color_uberSchriftText = "darkslategrey";
-    const color_elementSchrift = "black";
-
-
-
     const { item, parentAttribute, index, onUpdate } = this.props;
-    // const { splitButtonItems } = this.state;
-    if ( parentAttribute === 'superclass') console.log(item);
-    // The Class must implement all of the following interfaces
-
-    // The Interface must { have a name } 
-    // The interface must { an annotation } which [ fully equals ] the term [  ] ;
-
-    let entry = item;
-    let editingScope = false;
-
-    let optionText;
-    parentAttribute === 'interfaces' ? optionText = 'The interface has a name' : optionText = 'has a name';
 
     const splitButtonItems = this.createSplitButtonItems();
 
     return (
       <div>
-        {/* <h4 style={{color: 'green'}}> {this.props.parentAttribute}</h4> */}
         <div ref={this.componentBorderRef} style={{ marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '1px solid black'}}>
           {parentAttribute !== 'interfaces' && <LowerHeader optionType={parentAttribute} />}
-          <NameSelector onUpdate={onUpdate} style={{background: 'yellow'}} item={item} index={index} optionText={optionText} optionType={parentAttribute} />
-          {item.annotations && <AnnotationContainer onUpdate={this.onUpdateAnnotations} items={item.annotations} optionType={parentAttribute} />}
+          <NameSelector onUpdate={onUpdate} style={{background: 'yellow'}} item={item} index={index} optionType={parentAttribute} />
+          {item.annotations && <AnnotationContainer onUpdate={(updatedValue) => this.onGenericUpdate(updatedValue, 'annotations')} items={item.annotations} optionType={parentAttribute} />}
           <SplitButton tooltip="TODO: tooltip? or not" style={{position:'absolute', top:'10px' , right:'10px'}} label="add " icon="pi pi-plus" onClick={this.save} model={splitButtonItems}></SplitButton>
         </div>
         
@@ -148,10 +97,6 @@ class Item extends React.Component {
           <p style={{ visibility: 'hidden' , color:'red', position:'absolute', right:'35px', marginTop:'-3px'}}> remove this option </p>
           <i data-tobehighlighted={parentAttribute} onClick={this.removeOption} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} style={{ position: 'absolute', right: '5px', bottom:'-5px', fontSize:'30px',  color: 'red', opacity:'0.8'}} className="pi pi-times-circle"></i>
         </div>
-
-
-
-
       </div>
     )
   }

@@ -38,6 +38,8 @@ class Scope extends React.Component {
     })
   }
 
+  // TODO: do not read, this function is not used
+  // this part must still be transformed, probably deleting most part
   methodSelectorListTemplate = (methodSelector) => {
 
     const firstRow = { paddingRight: '15px', width: '125px'}
@@ -178,17 +180,12 @@ class Scope extends React.Component {
     const { icon_scopeName, icon_classSelector , icon_methodSelector} = this.state;
     const { scopeObject, onUpdate, currentlyDisplayScopeName } = this.props;
 
-    const scopeName = scopeObject.scopeName;
     const boxStyle = {background:'#EEEEEE', borderBottom: '1.5px solid white', padding: '25px'};
     const validCheckIcon = { border: '2px solid green', color: 'green', borderRadius:'15px' };
     const invalidCheckIcon = {border: '2px solid black', borderRadius:'15px', opacity: '0.1' };
     const marginBottom = '15px';
     const alignItems = 'center';
-
     const descriptionTextMaxWidth = '300px' // selector description max length, else the row expends to much
-
-    // TODO: groupAlias, where does the information come from
-    const groupAttributeAlias = 'class'
 
     return (
       <div className="this">
@@ -265,7 +262,7 @@ class Scope extends React.Component {
                 )}
               </div>
 
-              
+              {/* obsolete, do not read , this will be removed */}
               <ListBox value={scopeObject.methods} style={{ witdh: '800px' }} options={scopeObject.methods} onChange={(e) => this.setState({selectedCity: e.value})} 
               optionLabel="name" itemTemplate={this.methodSelectorListTemplate} />
               

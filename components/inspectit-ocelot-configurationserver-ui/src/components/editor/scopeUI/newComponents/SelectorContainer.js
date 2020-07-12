@@ -1,4 +1,4 @@
-import ItemContainer from "./ItemContainer";
+import ClassSelector from "./ClassSelector";
 
 // interface, type, superclass, method ebene
 function SelectorContainer({scopeObject, onUpdate}) {
@@ -8,8 +8,8 @@ function SelectorContainer({scopeObject, onUpdate}) {
       { Object.keys(scopeObject).map( (optionType, selectorContainerIndex) => 
         <React.Fragment> 
         {/* HINT: selectorContainerIndex is used within the upperheader to visualize the ... and releation between the optionTypes */}
-        {optionType !== 'methods' && <ItemContainer onUpdate={onUpdate} item={scopeObject} optionType={optionType} selectorType={'Class'} selectorContainerIndex={selectorContainerIndex}/>}
-        {optionType === 'methods' && <ItemContainer onUpdate={onUpdate} item={scopeObject} optionType={optionType} selectorType={'Class'} selectorContainerIndex={selectorContainerIndex}/>}
+        {optionType !== 'methods' && <ClassSelector onUpdate={onUpdate} item={scopeObject} optionType={optionType} selectorType={'Class'} selectorContainerIndex={selectorContainerIndex}/>}
+        {/* {optionType === 'methods' && <ItemContainer onUpdate={onUpdate} item={scopeObject} optionType={optionType} selectorType={'Method'} selectorContainerIndex={selectorContainerIndex}/>} */}
         </React.Fragment>
       )}
     </React.Fragment>

@@ -4,9 +4,9 @@ import InterfaceListContainer from "./InterfaceListContainer"
 import deepCopy from "json-deep-copy";
 
 // Either the container displays a single <Item> or an List of <Item>
-class ItemContainer extends React.Component {
+class ClassSelector extends React.Component {
 
-  state={annotationArrays:[]}
+  state={}
 
   componentWillMount () {
  
@@ -33,33 +33,7 @@ class ItemContainer extends React.Component {
         updatedItem[optionType] = updatedValue;
       }
     }
-    let a ;
     onUpdate(updatedItem);
-  }
-
-  //   updatedValue beschreibt die Inhalte von interfaces, type , superclass
-  onItemUpdate = ( updatedValue , optionType ) => {
-    let { onUpdate, item } = this.props;
-    let updatedScopeObject = deepCopy(item);
-    if (Object.keys(updatedValue).length === 0) {
-      delete updatedScopeObject[optionType];
-    } else {
-      updatedScopeObject[optionType] = updatedValue;
-    }
-    onUpdate(updatedValue); 
-  }
-
-  // löschen und onChange 
-  onUpdateInteraces = (updatedInterfaces) => {
-    const { item , onUpdate } = this.props;
-    const updated_item = deepCopy(item);
-    if( updatedInterfaces.length === 0) {
-        delete updated_item.interfaces;
-    } else {
-      updated_item.interfaces = updatedInterfaces;
-    }
-    // this onUpdate takes the whole item and updates it
-    onUpdate(updated_item);
   }
 
   render() {
@@ -71,7 +45,7 @@ class ItemContainer extends React.Component {
         <React.Fragment> 
           <UpperHeader selectorType={selectorType} optionType={optionType} selectorContainerIndex={selectorContainerIndex} />
           {/* list of items */}
-          { Array.isArray(item[optionType]) && <InterfaceListContainer onUpdate={this.onUpdateInteraces} index={selectorContainerIndex} items={item[optionType]} parentAttribute={optionType} />}
+          { Array.isArray(item[optionType]) && <InterfaceListContainer onUpdate={(updatedValue) => this.onGenericUpdate(updatedValue, optionType)} index={selectorContainerIndex} items={item[optionType]} parentAttribute={optionType} />}
 
           {/* single item */}
           { !Array.isArray(item[optionType]) && (
@@ -86,4 +60,4 @@ class ItemContainer extends React.Component {
 
 }
 
-export default ItemContainer;
+export default ClassSelector;
