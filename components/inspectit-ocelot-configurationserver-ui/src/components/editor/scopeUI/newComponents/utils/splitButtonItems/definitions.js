@@ -22,7 +22,7 @@ export const type = [
       }
       return item;
     },
-    },
+  },
   {
     actionId: 'adding annotation',
     label: 'specify the class by the annotations, which are attached to it.',

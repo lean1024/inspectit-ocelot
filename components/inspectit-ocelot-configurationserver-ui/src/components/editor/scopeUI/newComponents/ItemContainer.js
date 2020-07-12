@@ -64,25 +64,18 @@ class ItemContainer extends React.Component {
   render() {
     const { item, optionType, selectorType, selectorContainerIndex, onUpdate  } = this.props;
     const { annotationArrays } = this.state;
-
-    console.log('selectorContainerIndex',selectorContainerIndex);
-
-    console.log('')
-    console.log('################## item')
-    console.log('')
-    console.log('selectorType',selectorType);
     
     return (
       item[optionType] && (
         <React.Fragment> 
           <UpperHeader selectorType={selectorType} optionType={optionType} selectorContainerIndex={selectorContainerIndex} />
           {/* list of items */}
-          { Array.isArray(item[optionType]) && <InterfaceListContainer onUpdate={this.onUpdateInteraces} index={selectorContainerIndex} items={item[optionType]} parentAttribute={optionType} selectorType={selectorType} />}
+          { Array.isArray(item[optionType]) && <InterfaceListContainer onUpdate={this.onUpdateInteraces} index={selectorContainerIndex} items={item[optionType]} parentAttribute={optionType} />}
 
           {/* single item */}
           { !Array.isArray(item[optionType]) && (
             <React.Fragment>
-              <Item item={item[optionType]} parentAttribute={optionType} selectorType={selectorType} onUpdate={(updatedValue) => this.onGenericUpdate(updatedValue, optionType)}/>
+              <Item item={item[optionType]} parentAttribute={optionType} onUpdate={(updatedValue) => this.onGenericUpdate(updatedValue, optionType)}/>
             </React.Fragment>
           )}
         </React.Fragment>

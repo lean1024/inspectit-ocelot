@@ -13,9 +13,10 @@ import {SplitButton} from 'primereact/splitbutton';
 import { getSplitButtonsItems , enableCreateAttributeWithinSplitItemEntries} from './utils/splitButtonItems/getSplitButtonItems';
 import { invalidActions, splittButtonItemIsInvalid, adjustInvalidSplitButtonItem } from './utils/splitButtonItems/invalidLabelsTopDown';
 
-
 class Item extends React.Component {
   state = { splitMenuItems: [] }
+
+  componentBorderRef = React.createRef();
 
   componentWillMount() {
     const {parentAttribute, item } = this.props;
@@ -45,73 +46,20 @@ class Item extends React.Component {
     onUpdate(updatedItem);
   }
 
- 
-
-  // the component needs highlighting for better UX.
-  // the "add" and "remove" icons indicate which div they will remove with a red outline 
-
-  // each template got a data-optiontype
-  // each mouseOver icon got a data-tobehighlighted 
-  // the function finds the corresponding div and highlights it
   handleMouseOver = (e) => {
     let tooltip = e.target.previousSibling;
     tooltip.style.visibility = 'visible'
-
-    let optionType = e.target.dataset.tobehighlighted;
-    let targetArray = Array.from(document.querySelectorAll('[data-optiontype]'));
-    targetArray.map(element => {
-      if ( element.dataset.optiontype === optionType ) {
-        console.log(' ')
-        console.log('#################')
-        console.log(element)
-        console.log(element.dataset.optiontype)
-        console.log(optionType)
-        element.style.border = '1px solid transparent';
-        element.style.boxShadow = '0 0 0 3px red';
-      }
-    })
+    const element = this.componentBorderRef.current
+    element.style.border = '1px solid transparent';
+    element.style.boxShadow = '0 0 0 3px red';
   } 
 
   handleMouseLeave = (e) => {
     let tooltip = e.target.previousSibling;
     tooltip.style.visibility = 'hidden';
-
-    let optionType = e.target.dataset.tobehighlighted;
-    let targetArray = Array.from(document.querySelectorAll('[data-optiontype]'));
-    targetArray.map(element => {
-      if ( element.dataset.optiontype === optionType ) 
-      element.style.border = '1px solid black';
-      element.style.boxShadow = '';
-    })
-  }
-
-  handleItemRemoveOver = (e) => { 
-    let optionDiv = e.target.parentElement
-    optionDiv.style.boxShadow = '0 0 0 3px red';
-    this.setState({hoveredItem:optionDiv })
-  }
-  handleItemRemoveLeave =  (e) => {
-    const { hoveredItem } = this.state;
-    // boxShadow to highlight which item gets removed. Boxshadow leaves a color behind.. weird interaction. Quick fix, background matching
-    hoveredItem.style.boxShadow = '0 0 0 1px lightsteelblue';
-    this.setState({hoveredItem: undefined})
-  }
-
-  handleAddItemOver = (e) => {
-    e.target.nextSibling && (e.target.nextSibling.style.visibility = 'visible');
-
-    // @delay functionality
-    // let el=e.target.nextSibling
-    // let delay= setTimeout(() => {el.style.visibility = 'visible';},1000);
-    // console.log(delay);
-    // el.addEventListener('mouseleave', (e) => {
-    //   clearTimeout(delay);
-    //   el.removeEventListener('onmouseleave');
-    // });
-  }
-
-  handleAddItemLeave = (e) => {
-    e.target.nextSibling && (e.target.nextSibling.style.visibility = 'hidden');
+    const element = this.componentBorderRef.current
+    element.style.border = '1px solid black';
+    element.style.boxShadow = '';
   }
 
   // superclass: { name - matcher-mode , annotations } 
@@ -172,7 +120,7 @@ class Item extends React.Component {
 
 
 
-    const { item, parentAttribute, selectorType, index, onUpdate } = this.props;
+    const { item, parentAttribute, index, onUpdate } = this.props;
     // const { splitButtonItems } = this.state;
 
     // The Class must implement all of the following interfaces
@@ -190,10 +138,10 @@ class Item extends React.Component {
 
     return (
       <div>
-        <div data-optiontype={parentAttribute} style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '1px solid black'}}>
+        <div ref={this.componentBorderRef} style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '1px solid black'}}>
           {parentAttribute !== 'interfaces' && <LowerHeader optionType={parentAttribute} />}
-          <NameSelector onUpdate={onUpdate} style={{background: 'yellow'}} item={item} index={index} optionText={optionText} optionType={parentAttribute} selectorType={selectorType} />
-          {item.annotations && <AnnotationContainer onUpdate={this.onUpdateAnnotations} items={item.annotations} optionType={parentAttribute} selectorType={selectorType}/>}
+          <NameSelector onUpdate={onUpdate} style={{background: 'yellow'}} item={item} index={index} optionText={optionText} optionType={parentAttribute} />
+          {item.annotations && <AnnotationContainer onUpdate={this.onUpdateAnnotations} items={item.annotations} optionType={parentAttribute} />}
           <SplitButton tooltip="TODO: tooltip? or not" style={{position:'absolute', top:'10px' , right:'10px'}} label="add functionality" icon="pi pi-plus" onClick={this.save} model={splitButtonItems}></SplitButton>
         </div>
         
