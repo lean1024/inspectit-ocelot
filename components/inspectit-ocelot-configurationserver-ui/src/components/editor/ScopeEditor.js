@@ -11,7 +11,7 @@ import { Row } from 'primereact/row';
 import { TreeTable } from 'primereact/treetable';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Scope from './scopeUI/ScopeContainer';
+import Scope from './scopeUI/Scope';
 import { BreadCrumb } from 'primereact/breadcrumb';
 
 import deepCopy from 'json-deep-copy'
@@ -31,31 +31,28 @@ const schemaType = {
 const DEFAULT_EXPANDED_KEYS = { inspectit: true };
 
 /**
- * Editor for showing the config file as the table tree.
+ * Editor for showing the scopes of the config file as UI
  *
- * TODO what about duration
- * TODO what about enums (select box, but not used)
- * TODO what about the multiline strings
  */
 class ScopeEditor extends React.Component {
 
-  constructor() {
-    super();
-    this.state = {
-        city: null,
-        cities: null,
-        car: 'BMW',
-        showOverview: true,
-        breadCrumbItems: [
-          { label: 'Scope Overview' },
-        ],
-        scopeObject: { inspectit:  {instrumentation: {scopes: {}}}}
-    };
+  state = { 
+    showOverview: true,
+    breadCrumbItems: [
+      { label: 'Scope Overview' },
+    ],
+    currentlyDisplayScopeName: '',
+  }
+
+  componentDidMount(){
+    this.addEventListenerToBreadCrumbs();
+    this.setScopeNamesFromConfig();
   }
 
   displayOverview = () => this.setState({ showOverview: true})
       
   setScopeNamesFromConfig = () => {
+    // asserting that accessing attributes does not happen on undefined. Since sometimes the inspectIt wasnt passed
     if( this.props.config.inspectit &&  this.props.config.inspectit.instrumentation && this.props.config.inspectit.instrumentation.scopes) {
       let scopes = this.props.config.inspectit.instrumentation.scopes;
       let scopeNameList = [];
@@ -66,84 +63,43 @@ class ScopeEditor extends React.Component {
     }
   }
 
+  // TODO:
   handleBreadCrumbClick = () => {
     this.setState({ breadCrumbItems: [{ label: 'Scope Overview' }]});
-    console.log('##################################')
     this.displayOverview();
   }
 
+  // TODO: c-important. Please do not use limited time on less important code for the month goal.
+  // <BreadCrumb> elements nagivate to other urls. example     { label: 'Lionel Messi', url: 'https://en.wikipedia.org/wiki/Lionel_Messi' }
   // <BreadCrumb> does not enable onClick listener on the elements, this manually adding.
   addEventListenerToBreadCrumbs = () => {
     // Array.from(htmlCollection)
     let breadCrumbArray = Array.from(document.getElementsByClassName('p-breadcrumb p-component')[0].getElementsByClassName('p-menuitem-link'));
-    console.log(breadCrumbArray);
     breadCrumbArray.map(element => {
       if( element.innerText === 'Scope Overview' ) {
         element.addEventListener('click', this.handleBreadCrumbClick);
       }
     })
-
   }
 
-  componentDidMount(){
-    // if is necessary, since config object is empty. The component does always "exist" since we only hide it with display: 'none
-    // display none is because #info1
-    this.addEventListenerToBreadCrumbs();
-
-  }
-
-  componentWillReceiveProps(){
-    // I had it placed inside componentDidMount. But sometimes the yml|value|config would be empty on mount ...?
-    this.setScopeNamesFromConfig();
-  }
-
-
-  handleOnEdit = (e) => {
-    this.setState({ showOverview: false})
-  }
+  handleOnEdit = () => this.setState({ showOverview: false});
 
   handleDoubleClick = (e) => {
     const name = e.target.dataset.name;
     const { config } = this.props;
 
-    // getting the correct single scopeObject to pass as props
+    // TODO: inserting name into scopeObject is obsolete, since onUpdate= (updatedValue) => this.onUpdate(updatedValue, scopeName)
+    // // getting the correct single scopeObject to pass as props
     let scopeObject = config.inspectit.instrumentation.scopes[name];
-    scopeObject['scopeName'] = name;
-    // scopeObject = this.createArrayInScopeObject(scopeObject);
+    // scopeObject['scopeName'] = name;
 
     const breadCrumbItems = [{'label': 'Scope Overview'}, {'label': name }];
-    this.setState({ scopeObject, showOverview: false, breadCrumbItems})
+    this.setState({ scopeObject, showOverview: false, breadCrumbItems, currentlyDisplayScopeName: name})
   }
-
-  // type and superclass are not nested inside an array. Each option should look same in the json. This can then be used in a single component
-  // createArrayInScopeObject = (scopeObject) => {
-  //   if ( scopeObject.type ) {
-  //     let type = deepCopy(scopeObject.type);
-  //     scopeObject.type = [type];
-  //   }
-  //   if ( scopeObject.superclass ) {
-  //     let superclass = deepCopy(scopeObject.superclass);
-  //     scopeObject.superclass = [superclass];
-  //   }
-  //   return scopeObject;
-  // }
-
-  // // type and superclass are not nested inside an array in the original schema. Removing the array to match original schema.
-  // removeArrayInScopeObject = (scopeObject) => {
-  //   if ( Array.isArray(scopeObject.type) ) {
-  //     let type = deepCopy(scopeObject.type[0]);
-  //     scopeObject.type = type;
-  //   }
-  //   if ( Array.isArray(scopeObject.superclass) ) {
-  //     let superclass = deepCopy(scopeObject.superclass[0]);
-  //     scopeObject.superclass = superclass;
-  //   }
-  //   return scopeObject;
-  // }
 
   updateBreadCrumbs = breadCrumbItems => this.setState({ breadCrumbItems});
   
-  carTemplate = (option) => {
+  itemTemplate = (option) => {
     return (
         <div >
           <p data-name={option.label} onDoubleClick={this.handleDoubleClick}> {option.label} </p>
@@ -151,36 +107,29 @@ class ScopeEditor extends React.Component {
     );
   }
 
-  updateScopeObject = ( scopeObject) => {
+  onUpdate = ( updatedValue, scopeName ) => {
+    const { scopeObject } = this.state;
+    let { onUpdate, config } = this.props;
     // updating the scopeObject in state
     // this variable is being passed down, and must be updated
     // this variable is only setted in the doubleClick elsewise.
-    console.log('vorher',scopeObject)
-  
-    let copy = deepCopy(scopeObject)
-    this.setState({ scopeObject: copy})
+    let copyConfig = deepCopy(config)
+    this.setState({ scopeObject: updatedValue})
 
-    
-    let { onUpdate, config } = this.props;
-    // scopeObject = this.removeArrayInScopeObject(scopeObject);
-    
-    let scopeName = scopeObject.scopeName;
-    // the cloned scopeObject got the scopeName to reference, which scope it to be updated and still haves it. 
-    // the updated value should not contain the scopeName thus we remove it.
-    if (scopeObject.scopeName ) delete scopeObject['scopeName'];
-    config.inspectit.instrumentation.scopes[scopeName] = scopeObject;
-    onUpdate(config);
-    console.log('nacher',scopeObject)
+    copyConfig = updatedValue;
+    onUpdate(copyConfig);
   }
 
   render() {
-    const { loading, config, ...rest } = this.props;
-    const { scopeNameList, showOverview, scopeObject, breadCrumbItems } = this.state;
-    console.log('breadCrumbItems: ');
-    console.log(breadCrumbItems);
+    const { config, ...rest } = this.props;
+    const { scopeNameList, showOverview, scopeObject, breadCrumbItems, currentlyDisplayScopeName } = this.state;
+
+    // TODO: consistent styling of all toolbarButtonStyles?
+    const toolbarButtonStyle = {padding: '5px' , background: 'rgb(139, 172, 189)', margin: '5px'};
 
     return (
       <div className="this">
+        {/* the style here was copied from i believe tree table, it gives good indications about how the page should look like, so i used it */}
         <style jsx>{`
           .this {
             flex: 1;
@@ -236,17 +185,17 @@ class ScopeEditor extends React.Component {
             showOverview && (
               <div style={{ marginLeft: '50px', marginTop: '25px'}} className="content-section implementation">
                 <h4 >The following scopes exist within the selected file</h4>
-                <ListBox value={this.state.car} filter={true} filterPlaceholder="Search" options={scopeNameList} onChange={(e) => this.setState({car: e.value})} itemTemplate={this.carTemplate}
+                <ListBox filter={true} filterPlaceholder="Search" options={scopeNameList} itemTemplate={this.itemTemplate}
                   style={{width:'500px'}} listStyle={{}}/>
                 <div style={{ margin: '25px'}}>
-                  <Button onClick={this.createOption} label="create new" style={{ padding: '5px' , background: 'rgb(139, 172, 189)', margin: '5px'}}> </Button>
-                  <Button onClick={this.handleOnEdit} label="edit" style={{ padding: '5px' , background: 'rgb(139, 172, 189)', margin: '5px'}}> </Button>
-                  <Button onDoubleClick={this.deleteOption} label="delete" style={{ padding: '5px' , background: 'rgb(139, 172, 189)', margin: '5px'}}> </Button>
+                  <Button onClick={this.createOption} label="create new" style={{ ...toolbarButtonStyle}}> </Button>
+                  <Button onClick={this.handleOnEdit} label="edit" style={{ ...toolbarButtonStyle}}> </Button>
+                  <Button onDoubleClick={this.deleteOption} label="delete" style={{ ...toolbarButtonStyle}}> </Button>
                 </div>
               </div>
           )}
           { !showOverview && (
-            <Scope config={config} scopeObject={scopeObject} updateBreadCrumbs={this.updateBreadCrumbs} updateScopeObject={this.updateScopeObject} />
+            <Scope currentlyDisplayScopeName={currentlyDisplayScopeName} scopeObject={scopeObject} updateBreadCrumbs={this.updateBreadCrumbs} onUpdate={(updatedValue) => this.onUpdate(updatedValue, currentlyDisplayScopeName)} />
             )} 
         </div>
       </div>
@@ -257,18 +206,8 @@ class ScopeEditor extends React.Component {
 ScopeEditor.propTypes = {
   /** The configuration object */
   config: PropTypes.object,
-  /** The config file schema */
-  schema: PropTypes.object,
-  /** If there is loading in progress */
-  loading: PropTypes.bool,
-  /** If it's read only */
-  readOnly: PropTypes.bool,
   /** Function to invoke for full config update */
   onUpdate: PropTypes.func,
-};
-
-ScopeEditor.defaultProps = {
-  loading: false,
 };
 
 export default ScopeEditor;

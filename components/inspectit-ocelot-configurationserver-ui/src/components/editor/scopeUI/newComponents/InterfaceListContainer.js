@@ -2,11 +2,10 @@ import UpperHeader from "./UpperHeader";
 import Item from "./Item";
 import LowerHeader from "./LowerHeader";
 
-// Either the container displays a single <Item> or an List of <Item>
-class InterfaceListContainer extends React.Component {
+// parent attribute = 'interfaces'
+function InterfaceListContainer( {items, parentAttribute, onUpdate,} ) {
 
-  onUpdateListItem = ( updatedValue , index ) => {
-    let { onUpdate, items } = this.props;
+  const onUpdateListItem = ( updatedValue , index ) => {
     let updatedItems = items;
 
     if ( Object.keys(updatedValue).length == 0) { 
@@ -21,23 +20,17 @@ class InterfaceListContainer extends React.Component {
     onUpdate(updatedItems);
   }
 
-  render() {
-    // parent attribute = 'interfaces'
-    const { items, parentAttribute, selectorType, selectorContainerIndex } = this.props;
- 
-    return (
-      <React.Fragment>
-        <div data-optiontype={parentAttribute} style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: '#EEEEE', borderRadius: '10px' , border: '1px solid black'}}>
-          <LowerHeader optionType={parentAttribute} />
-          { items.map( (element, index) => 
-            <Item onUpdate={(updateObj) => this.onUpdateListItem(updateObj, index)} item={element} parentAttribute={parentAttribute} />
-          )}
+  return (
+    <React.Fragment>
+      <div data-optiontype={parentAttribute} style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: '#EEEEE', borderRadius: '10px' , border: '1px solid black'}}>
+        <LowerHeader optionType={parentAttribute} />
+        { items.map( (element, index) => 
+          <Item onUpdate={(updateObj) => onUpdateListItem(updateObj, index)} item={element} parentAttribute={parentAttribute} />
+        )}
 
-        </div>
-      </React.Fragment>
-    )
-  }
-
+      </div>
+    </React.Fragment>
+  )
 }
 
 export default InterfaceListContainer;

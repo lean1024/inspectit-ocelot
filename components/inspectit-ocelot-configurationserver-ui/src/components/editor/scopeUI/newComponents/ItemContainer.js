@@ -9,7 +9,7 @@ class ItemContainer extends React.Component {
   state={annotationArrays:[]}
 
   componentWillMount () {
-    this.setAnnotationArrays
+ 
   }
 
   // updatedValue can be generic, a json {} , or an array [] - we can handle it
@@ -33,6 +33,7 @@ class ItemContainer extends React.Component {
         updatedItem[optionType] = updatedValue;
       }
     }
+    let a ;
     onUpdate(updatedItem);
   }
 

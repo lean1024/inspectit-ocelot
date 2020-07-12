@@ -101,8 +101,6 @@ class Item extends React.Component {
     // adjusting the single items
     splittButtonItems.map(splittButtonItem => {
       const invalidActionJson = splittButtonItemIsInvalid(item, splittButtonItem)  // returns object with required information for the following actions or false
-      console.log('xuxa')
-      console.log(invalidActionJson);
       if(invalidActionJson) splittButtonItem = adjustInvalidSplitButtonItem(splittButtonItem, invalidActionJson);
     })
 
@@ -122,7 +120,7 @@ class Item extends React.Component {
 
     const { item, parentAttribute, index, onUpdate } = this.props;
     // const { splitButtonItems } = this.state;
-
+    if ( parentAttribute === 'superclass') console.log(item);
     // The Class must implement all of the following interfaces
 
     // The Interface must { have a name } 
@@ -138,7 +136,8 @@ class Item extends React.Component {
 
     return (
       <div>
-        <div ref={this.componentBorderRef} style={{  marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '1px solid black'}}>
+        {/* <h4 style={{color: 'green'}}> {this.props.parentAttribute}</h4> */}
+        <div ref={this.componentBorderRef} style={{ marginBottom: '',  position:'relative', height: '', padding: '25px', background: background_bigDiv, borderRadius: '10px' , border: '1px solid black'}}>
           {parentAttribute !== 'interfaces' && <LowerHeader optionType={parentAttribute} />}
           <NameSelector onUpdate={onUpdate} style={{background: 'yellow'}} item={item} index={index} optionText={optionText} optionType={parentAttribute} />
           {item.annotations && <AnnotationContainer onUpdate={this.onUpdateAnnotations} items={item.annotations} optionType={parentAttribute} />}
