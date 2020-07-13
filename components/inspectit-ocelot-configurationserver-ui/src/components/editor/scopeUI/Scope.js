@@ -1,8 +1,5 @@
 import {InputText} from 'primereact/inputtext';
 import {ListBox} from 'primereact/listbox';
-
-import { cloneDeep } from 'lodash';
-import PropTypes, { object } from 'prop-types';
 import React from 'react';
 
 import SelectorContainer from './newComponents/SelectorContainer';
@@ -235,7 +232,7 @@ class Scope extends React.Component {
 
               {/* classSelector here */}
               <div style={{width:'', background:'white', minHeight: '200px',  padding:'35px'}}>
-                <SelectorContainer scopeObject={scopeObject} onUpdate={onUpdate} />
+               <SelectorContainer doNotFilter_maybeAsVariable={['type','superclass','interfaces']} scopeObject={scopeObject} onUpdate={onUpdate} contextAlias_maybeAsVariable={'classes'}/>  {/* selectorType should be removed, i use it here to not duplicate selectorContainer, because only the "heading" changes.  */}
               </div>
             </div>
 
@@ -261,10 +258,12 @@ class Scope extends React.Component {
                   <i style={{...validCheckIcon}}className="pi pi-check"></i>
                 )}
               </div>
-
+              <div style={{width:'', background:'white', minHeight: '200px',  padding:'35px'}}>
+                <SelectorContainer doNotFilter_maybeAsVariable={['methods']} scopeObject={scopeObject} onUpdate={onUpdate} contextAlias_maybeAsVariable={'methods'}/>  {/* selectorType should be removed, i use it here to not duplicate selectorContainer, because only the "heading" changes.  */}
+              </div>
               {/* obsolete, do not read , this will be removed */}
-              <ListBox value={scopeObject.methods} style={{ witdh: '800px' }} options={scopeObject.methods} onChange={(e) => this.setState({selectedCity: e.value})} 
-              optionLabel="name" itemTemplate={this.methodSelectorListTemplate} />
+              {/* <ListBox value={scopeObject.methods} style={{ witdh: '800px' }} options={scopeObject.methods} onChange={(e) => this.setState({selectedCity: e.value})} 
+              optionLabel="name" itemTemplate={this.methodSelectorListTemplate} /> */}
               
             </div>
 

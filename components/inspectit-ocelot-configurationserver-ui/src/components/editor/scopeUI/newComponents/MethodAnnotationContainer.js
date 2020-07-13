@@ -26,7 +26,7 @@ class AnnotationContainer extends React.Component {
           this.setState({optionTypeText: 'visibility'}) 
           break;
         // TODO: case annotation ? oder annotations plural
-        case 'annotation':
+        case 'annotations':
           this.setState({ optionTypeText: 'annotation'})
           break;
         case 'arguments':
@@ -55,11 +55,12 @@ class AnnotationContainer extends React.Component {
     console.log(this.props);
     
     return (
-      <React.Fragment>
+      <div style={{ margin: '25px' , padding: '25px' , background: 'blue'}}>
         {items.map( (annotationItem, index) => 
+        
           <NameSelector onUpdate={(updateObj) => this.onUpdateListItem(updateObj, index) } item={annotationItem}  optionText={`${optionTypeText} has an annotation`}  optionType={'annotations'} />
         )}
-      </React.Fragment>
+      </div>
     )
   }
 

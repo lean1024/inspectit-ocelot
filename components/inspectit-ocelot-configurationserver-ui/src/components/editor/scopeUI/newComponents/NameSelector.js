@@ -38,7 +38,7 @@ class NameSelector extends React.Component {
   render() {
     const background_middleDiv = "white"; 
     const color_elementSchrift = "black";
-    const { item, optionType,  } = this.props;
+    const { item, optionType, } = this.props;
 
     let optionText;
     optionType === 'interfaces' ? optionText = 'The interface has a name' : optionText = 'has a name';

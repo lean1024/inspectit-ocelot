@@ -51,12 +51,13 @@ class LowerHeader extends React.Component {
     const divStyle = { padding: '5px 10px 0 10px' ,height:'30px',  background: background_uberSchriftDiv, width: 'fit-content', outline:'', marginBottom: '15px', borderRadius: '10px' };
     const pStyle = { fontWeight: 'bold', marginTop: '0px' };
 
+    const disableFor = ['type', 'matcher-mode', 'is-synchronized', 'is-constructor']
     
     return (
       <React.Fragment>
-        { optionType !== 'type' && (
+        { !disableFor.includes(optionType) && (
           <div style={{...divStyle}}>
-            <h4 style={{ ...pStyle}}>...{upperText} </h4>
+            <h4 style={{ ...pStyle}}>... {upperText} - {optionType} </h4>
           </div>  
         )}
       </React.Fragment>
